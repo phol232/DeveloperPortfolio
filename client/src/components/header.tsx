@@ -48,7 +48,7 @@ export function Header() {
         <nav className="flex items-center justify-between">
           <div className="flex items-center">
             <div className="text-xl font-bold text-white">
-              David<span className="text-primary">.</span>
+              Phol<span className="text-primary">.</span>
             </div>
           </div>
           

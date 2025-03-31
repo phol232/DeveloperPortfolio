@@ -159,14 +159,14 @@ export const skills = [
 
 // Contact Information
 export const contactInfo = {
-  name: "David",
-  email: "contact@yourdomain.com",
-  phone: "+123 456 7890",
-  location: "City, Country",
+  name: "Phol",
+  email: "edwinrojastaquiri@gmail.com",
+  phone: "+51 934866486",
+  location: "Huancayo, Perú",
   social: {
-    github: "https://github.com",
-    linkedin: "https://linkedin.com",
-    twitter: "https://twitter.com",
-    instagram: "https://instagram.com"
+    github: "https://github.com/phol232",
+    linkedin: "https://www.linkedin.com/public-profile/settings?trk=d_flagship3_profile_self_view_public_profile",
+    twitter: "https://x.com/Pholxd",
+    instagram: "https://www.instagram.com/pholj21?igsh=MXI1a3hkZHE3em5reg%3D%3D&utm_source=qr"
   }
 };

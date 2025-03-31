@@ -33,7 +33,7 @@ export function Hero() {
                 className="text-primary font-medium mb-2"
                 variants={item}
               >
-                Soy David!
+                Soy Phol!
               </motion.p>
               <motion.h1 
                 className="text-5xl md:text-6xl font-bold mb-6"
@@ -48,9 +48,11 @@ export function Hero() {
                 className="text-gray-300 mb-8 text-lg max-w-2xl"
                 variants={item}
               >
-                Especialista en Laravel y Spring Boot enfocado en crear soluciones digitales de alto impacto. 
-                Transformo ideas en aplicaciones escalables con arquitecturas sostenibles y prácticas avanzadas de control de versiones, 
-                asegurando sistemas resilientes con más de 99.9% de disponibilidad.
+                Laravel and Spring Boot specialist focused on creating high-impact digital solutions. 
+                I transform ideas into scalable business applications through sustainable architectures 
+                and advanced version control practices. My approach ensures resilient systems with over 99.9% 
+                availability that evolve without accumulating technical debt, turning technical challenges 
+                into lasting competitive advantages for your business.
               </motion.p>
               
               <motion.div 
