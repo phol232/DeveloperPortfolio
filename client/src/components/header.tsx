@@ -66,25 +66,22 @@ export function Header() {
     // Primero cerramos el menú móvil
     setIsOpen(false);
     
-    // Ejecutamos inmediatamente para mejorar la respuesta en iOS
+    // Simple y efectivo - funciona en iOS y Android
     const element = document.getElementById(sectionId);
     if (element) {
       // Ajustamos el offset para diferentes dispositivos
       const offset = window.innerWidth < 768 ? 60 : 80;
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - offset;
       
-      // Forzamos un pequeño retraso para mejorar la compatibilidad con iOS
-      requestAnimationFrame(() => {
-        // Definimos la posición exacta para mayor precisión
-        const top = element.getBoundingClientRect().top + window.pageYOffset - offset;
-        
-        window.scrollTo({
-          top: top,
-          behavior: "smooth",
-        });
-        
-        // Establecemos manualmente la sección activa para una respuesta inmediata
-        setActiveSection(sectionId);
+      // Usamos la forma más simple y confiable de scroll
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
       });
+      
+      // Actualizamos manualmente la sección activa
+      setActiveSection(sectionId);
     }
   };
 
@@ -136,11 +133,25 @@ export function Header() {
               style={{ top: "64px", zIndex: 40 }}
             >
               <div className="flex flex-col space-y-4 py-3 max-w-md mx-auto">
-                <MobileNavLink onClick={() => scrollToSection("home")}>Inicio</MobileNavLink>
-                <MobileNavLink onClick={() => scrollToSection("services")}>Servicios</MobileNavLink>
-                <MobileNavLink onClick={() => scrollToSection("projects")}>Proyectos</MobileNavLink>
-                <MobileNavLink onClick={() => scrollToSection("experience")}>Experiencia</MobileNavLink>
-                <MobileNavLink onClick={() => scrollToSection("contact")}>Contacto</MobileNavLink>
+                <a href="#home" onClick={(e) => { e.preventDefault(); setIsOpen(false); document.getElementById('home')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}>
+                  <MobileNavLink onClick={() => {}}>Inicio</MobileNavLink>
+                </a>
+                
+                <a href="#services" onClick={(e) => { e.preventDefault(); setIsOpen(false); document.getElementById('services')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}>
+                  <MobileNavLink onClick={() => {}}>Servicios</MobileNavLink>
+                </a>
+                
+                <a href="#projects" onClick={(e) => { e.preventDefault(); setIsOpen(false); document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}>
+                  <MobileNavLink onClick={() => {}}>Proyectos</MobileNavLink>
+                </a>
+                
+                <a href="#experience" onClick={(e) => { e.preventDefault(); setIsOpen(false); document.getElementById('experience')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}>
+                  <MobileNavLink onClick={() => {}}>Experiencia</MobileNavLink>
+                </a>
+                
+                <a href="#contact" onClick={(e) => { e.preventDefault(); setIsOpen(false); document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}>
+                  <MobileNavLink onClick={() => {}}>Contacto</MobileNavLink>
+                </a>
               </div>
             </motion.div>
           )}
@@ -175,32 +186,11 @@ function NavLink({ children, active, onClick }: NavLinkProps) {
 }
 
 function MobileNavLink({ children, onClick }: NavLinkProps) {
-  // Mejoramos el manejo de eventos para iOS
-  const handleClick = (e: React.MouseEvent) => {
-    // Prevenimos comportamiento por defecto que puede causar problemas en iOS
-    e.preventDefault();
-    e.stopPropagation();
-    
-    // Agregamos feedback visual inmediato
-    const button = e.currentTarget;
-    button.classList.add('bg-primary/20');
-    
-    // Ejecutamos el callback con un pequeño retraso para mejorar la respuesta visual
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        button.classList.remove('bg-primary/20');
-        // Llamamos a la función original
-        onClick();
-      }, 50);
-    });
-  };
-  
+  // Revertimos a la implementación simple pero confiable
   return (
     <button
-      onClick={handleClick}
-      // Agregamos -webkit-tap-highlight-color para mejorar feedback en iOS
-      className="font-medium text-gray-200 hover:text-white transition-colors py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between active:bg-primary/30"
-      style={{ WebkitTapHighlightColor: 'rgba(0,0,0,0)' }}
+      onClick={onClick}
+      className="font-medium text-gray-200 hover:text-white transition-colors py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
     >
       <span>{children}</span>
       <span className="opacity-50 text-primary">→</span>
