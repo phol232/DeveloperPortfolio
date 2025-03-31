@@ -43,31 +43,30 @@ export function Header() {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-background/90 backdrop-blur-sm z-50 border-b border-primary/20">
-      <div className="container mx-auto px-4 py-4">
+    <header className="fixed top-0 left-0 right-0 bg-background/80 backdrop-blur-md z-50">
+      <div className="container mx-auto px-6 py-5">
         <nav className="flex items-center justify-between">
           <div className="flex items-center">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-              <span className="text-white font-bold text-lg">D</span>
+            <div className="text-xl font-bold text-white">
+              David<span className="text-primary">.</span>
             </div>
-            <span className="ml-2 font-bold tracking-tight">DevPortfolio</span>
           </div>
           
-          <div className="hidden md:flex space-x-6">
+          <div className="hidden md:flex space-x-8">
             <NavLink active={activeSection === "home"} onClick={() => scrollToSection("home")}>
-              Home
+              Inicio
             </NavLink>
             <NavLink active={activeSection === "services"} onClick={() => scrollToSection("services")}>
-              Services
+              Servicios
             </NavLink>
             <NavLink active={activeSection === "projects"} onClick={() => scrollToSection("projects")}>
-              Projects
+              Proyectos
             </NavLink>
             <NavLink active={activeSection === "experience"} onClick={() => scrollToSection("experience")}>
-              Experience
+              Experiencia
             </NavLink>
             <NavLink active={activeSection === "contact"} onClick={() => scrollToSection("contact")}>
-              Contact
+              Contacto
             </NavLink>
           </div>
           
@@ -77,13 +76,6 @@ export function Header() {
           >
             {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
-          
-          <Button
-            onClick={() => scrollToSection("contact")}
-            className="hidden md:flex bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white"
-          >
-            Contact Me
-          </Button>
         </nav>
         
         {/* Mobile Menu */}
@@ -97,17 +89,11 @@ export function Header() {
               className="md:hidden mt-4 pb-4 overflow-hidden"
             >
               <div className="flex flex-col space-y-3">
-                <MobileNavLink onClick={() => scrollToSection("home")}>Home</MobileNavLink>
-                <MobileNavLink onClick={() => scrollToSection("services")}>Services</MobileNavLink>
-                <MobileNavLink onClick={() => scrollToSection("projects")}>Projects</MobileNavLink>
-                <MobileNavLink onClick={() => scrollToSection("experience")}>Experience</MobileNavLink>
-                <MobileNavLink onClick={() => scrollToSection("contact")}>Contact</MobileNavLink>
-                <Button
-                  onClick={() => scrollToSection("contact")}
-                  className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white w-full mt-2"
-                >
-                  Contact Me
-                </Button>
+                <MobileNavLink onClick={() => scrollToSection("home")}>Inicio</MobileNavLink>
+                <MobileNavLink onClick={() => scrollToSection("services")}>Servicios</MobileNavLink>
+                <MobileNavLink onClick={() => scrollToSection("projects")}>Proyectos</MobileNavLink>
+                <MobileNavLink onClick={() => scrollToSection("experience")}>Experiencia</MobileNavLink>
+                <MobileNavLink onClick={() => scrollToSection("contact")}>Contacto</MobileNavLink>
               </div>
             </motion.div>
           )}

@@ -18,24 +18,25 @@ const item = {
 
 export function Hero() {
   return (
-    <section id="home" className="pt-32 pb-20">
+    <section id="home" className="pt-32 pb-20 min-h-screen flex items-center">
       <div className="container mx-auto px-4">
         <motion.div 
-          className="flex flex-col md:flex-row items-center"
+          className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center"
           variants={container}
           initial="hidden"
           animate="show"
         >
-          <motion.div className="w-full md:w-1/2 mb-10 md:mb-0" variants={item}>
-            <div className="max-w-xl">
+          {/* Left content - takes up 7 columns on large screens */}
+          <motion.div className="lg:col-span-7" variants={item}>
+            <div className="max-w-3xl mx-auto lg:mx-0">
               <motion.p 
                 className="text-primary font-medium mb-2"
                 variants={item}
               >
-                I am David!
+                Soy David!
               </motion.p>
               <motion.h1 
-                className="text-4xl md:text-5xl font-bold mb-4"
+                className="text-5xl md:text-6xl font-bold mb-6"
                 variants={item}
               >
                 <span className="block">Web Developer +</span>
@@ -44,11 +45,12 @@ export function Hero() {
                 </span>
               </motion.h1>
               <motion.p 
-                className="text-gray-300 mb-8 text-lg"
+                className="text-gray-300 mb-8 text-lg max-w-2xl"
                 variants={item}
               >
-                Specialist in Laravel and Spring Boot with a focus on robust, scalable, and high-performance solutions. 
-                Turning ideas into applications that drive businesses forward.
+                Especialista en Laravel y Spring Boot enfocado en crear soluciones digitales de alto impacto. 
+                Transformo ideas en aplicaciones escalables con arquitecturas sostenibles y prácticas avanzadas de control de versiones, 
+                asegurando sistemas resilientes con más de 99.9% de disponibilidad.
               </motion.p>
               
               <motion.div 
@@ -65,9 +67,9 @@ export function Hero() {
                       });
                     }
                   }}
-                  className="px-6 py-3 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white"
+                  className="px-6 py-3 bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white"
                 >
-                  View Projects
+                  Ver Proyectos
                 </Button>
                 <Button
                   onClick={() => {
@@ -82,23 +84,24 @@ export function Hero() {
                   variant="outline" 
                   className="px-6 py-3 border-primary/30 hover:bg-primary/10 text-white"
                 >
-                  Contact
+                  Contacto
                 </Button>
               </motion.div>
             </div>
           </motion.div>
           
+          {/* Right content - Profile image takes up 5 columns */}
           <motion.div 
-            className="w-full md:w-1/2 flex justify-center md:justify-end relative"
+            className="lg:col-span-5 flex justify-center"
             variants={item}
           >
-            <div className="relative rounded-2xl overflow-hidden h-80 w-80 bg-card border border-primary/20">
+            <div className="relative rounded-2xl overflow-hidden h-[350px] w-[350px] bg-card border border-primary/20">
               {/* Space for profile image */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <span className="text-gray-400">Profile Image</span>
               </div>
-              <div className="absolute -bottom-6 -right-6 w-40 h-40 bg-primary/20 rounded-full blur-3xl"></div>
-              <div className="absolute -top-6 -left-6 w-40 h-40 bg-primary/20 rounded-full blur-3xl"></div>
+              <div className="absolute -bottom-6 -right-6 w-40 h-40 bg-primary/30 rounded-full blur-3xl"></div>
+              <div className="absolute -top-6 -left-6 w-40 h-40 bg-primary/30 rounded-full blur-3xl"></div>
             </div>
           </motion.div>
         </motion.div>
@@ -110,10 +113,10 @@ export function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 0.5 }}
         >
-          <StatCard value="14" label="Projects Completed" />
-          <StatCard value="50+" label="Satisfied Clients" />
-          <StatCard value="1.5K+" label="GitHub Commits" />
-          <StatCard value="14" label="Years of Experience" />
+          <StatCard value="14" label="Proyectos Completados" />
+          <StatCard value="50+" label="Clientes Satisfechos" />
+          <StatCard value="1.5K+" label="Commits en GitHub" />
+          <StatCard value="14" label="Años de Experiencia" />
         </motion.div>
       </div>
     </section>
