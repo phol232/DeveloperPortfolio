@@ -63,8 +63,10 @@ export function Hero() {
                   onClick={() => {
                     const projectsSection = document.getElementById("projects");
                     if (projectsSection) {
+                      // Ajustamos el offset para diferentes dispositivos
+                      const offset = window.innerWidth < 768 ? 60 : 80;
                       window.scrollTo({
-                        top: projectsSection.offsetTop - 80,
+                        top: projectsSection.offsetTop - offset,
                         behavior: "smooth",
                       });
                     }
@@ -77,8 +79,10 @@ export function Hero() {
                   onClick={() => {
                     const contactSection = document.getElementById("contact");
                     if (contactSection) {
+                      // Ajustamos el offset para diferentes dispositivos
+                      const offset = window.innerWidth < 768 ? 60 : 80;
                       window.scrollTo({
-                        top: contactSection.offsetTop - 80,
+                        top: contactSection.offsetTop - offset,
                         behavior: "smooth",
                       });
                     }

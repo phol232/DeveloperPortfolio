@@ -11,35 +11,74 @@ export function Header() {
   useEffect(() => {
     const handleScroll = () => {
       const sections = ["home", "services", "projects", "experience", "contact"];
-      const scrollPosition = window.scrollY + 100;
+      // Ajustamos el offset para diferentes dispositivos
+      const offset = window.innerWidth < 768 ? 150 : 100;
+      const scrollPosition = window.scrollY + offset;
+      
+      // Encontrar la sección más cercana al scroll actual
+      let activeSection = sections[0];
+      let minDistance = Infinity;
       
       for (const section of sections) {
         const element = document.getElementById(section);
         if (element) {
           const offsetTop = element.offsetTop;
-          const offsetHeight = element.offsetHeight;
+          const distance = Math.abs(scrollPosition - offsetTop);
           
+          if (distance < minDistance) {
+            minDistance = distance;
+            activeSection = section;
+          }
+          
+          // Si estamos claramente dentro de una sección, la activamos inmediatamente
+          const offsetHeight = element.offsetHeight;
           if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
             setActiveSection(section);
-            break;
+            return;
           }
         }
       }
+      
+      // Si no encontramos una sección clara, usamos la más cercana
+      setActiveSection(activeSection);
     };
     
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    // Throttle para mejor rendimiento en móviles
+    let ticking = false;
+    const throttledScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    
+    window.addEventListener("scroll", throttledScroll);
+    // Ejecutar una vez al cargar para establecer la sección inicial
+    setTimeout(handleScroll, 100);
+    
+    return () => window.removeEventListener("scroll", throttledScroll);
   }, []);
   
   const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      window.scrollTo({
-        top: element.offsetTop - 80,
-        behavior: "smooth",
-      });
-      setIsOpen(false);
-    }
+    // Primero cerramos el menú móvil
+    setIsOpen(false);
+    
+    // Usamos setTimeout para asegurar que el menú se cierra antes de desplazarse
+    setTimeout(() => {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        // Ajustamos el offset para diferentes dispositivos
+        const offset = window.innerWidth < 768 ? 60 : 80;
+        
+        window.scrollTo({
+          top: element.offsetTop - offset,
+          behavior: "smooth",
+        });
+      }
+    }, 10);
   };
 
   return (
@@ -86,9 +125,10 @@ export function Header() {
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="md:hidden mt-4 pb-4 overflow-hidden"
+              className="md:hidden mt-4 pb-4 overflow-hidden fixed inset-x-0 bg-background/95 backdrop-blur-md border-b border-primary/10 px-6"
+              style={{ top: "64px", zIndex: 40 }}
             >
-              <div className="flex flex-col space-y-3">
+              <div className="flex flex-col space-y-4 py-3 max-w-md mx-auto">
                 <MobileNavLink onClick={() => scrollToSection("home")}>Inicio</MobileNavLink>
                 <MobileNavLink onClick={() => scrollToSection("services")}>Servicios</MobileNavLink>
                 <MobileNavLink onClick={() => scrollToSection("projects")}>Proyectos</MobileNavLink>
@@ -131,9 +171,10 @@ function MobileNavLink({ children, onClick }: NavLinkProps) {
   return (
     <button
       onClick={onClick}
-      className="font-medium text-gray-200 hover:text-white transition-colors py-2 text-left"
+      className="font-medium text-gray-200 hover:text-white transition-colors py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
     >
-      {children}
+      <span>{children}</span>
+      <span className="opacity-50 text-primary">→</span>
     </button>
   );
 }
