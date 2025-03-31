@@ -133,25 +133,75 @@ export function Header() {
               style={{ top: "64px", zIndex: 40 }}
             >
               <div className="flex flex-col space-y-4 py-3 max-w-md mx-auto">
-                <a href="#home" onClick={(e) => { e.preventDefault(); setIsOpen(false); document.getElementById('home')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}>
-                  <MobileNavLink onClick={() => {}}>Inicio</MobileNavLink>
-                </a>
+                <button 
+                  onClick={() => {
+                    setIsOpen(false);
+                    setTimeout(() => {
+                      const element = document.getElementById('home');
+                      if (element) element.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                  }}
+                  className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
+                >
+                  <span>Inicio</span>
+                  <span className="opacity-50 text-primary">→</span>
+                </button>
                 
-                <a href="#services" onClick={(e) => { e.preventDefault(); setIsOpen(false); document.getElementById('services')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}>
-                  <MobileNavLink onClick={() => {}}>Servicios</MobileNavLink>
-                </a>
+                <button 
+                  onClick={() => {
+                    setIsOpen(false);
+                    setTimeout(() => {
+                      const element = document.getElementById('services');
+                      if (element) element.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                  }}
+                  className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
+                >
+                  <span>Servicios</span>
+                  <span className="opacity-50 text-primary">→</span>
+                </button>
                 
-                <a href="#projects" onClick={(e) => { e.preventDefault(); setIsOpen(false); document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}>
-                  <MobileNavLink onClick={() => {}}>Proyectos</MobileNavLink>
-                </a>
+                <button 
+                  onClick={() => {
+                    setIsOpen(false);
+                    setTimeout(() => {
+                      const element = document.getElementById('projects');
+                      if (element) element.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                  }}
+                  className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
+                >
+                  <span>Proyectos</span>
+                  <span className="opacity-50 text-primary">→</span>
+                </button>
                 
-                <a href="#experience" onClick={(e) => { e.preventDefault(); setIsOpen(false); document.getElementById('experience')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}>
-                  <MobileNavLink onClick={() => {}}>Experiencia</MobileNavLink>
-                </a>
+                <button 
+                  onClick={() => {
+                    setIsOpen(false);
+                    setTimeout(() => {
+                      const element = document.getElementById('experience');
+                      if (element) element.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                  }}
+                  className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
+                >
+                  <span>Experiencia</span>
+                  <span className="opacity-50 text-primary">→</span>
+                </button>
                 
-                <a href="#contact" onClick={(e) => { e.preventDefault(); setIsOpen(false); document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}>
-                  <MobileNavLink onClick={() => {}}>Contacto</MobileNavLink>
-                </a>
+                <button 
+                  onClick={() => {
+                    setIsOpen(false);
+                    setTimeout(() => {
+                      const element = document.getElementById('contact');
+                      if (element) element.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                  }}
+                  className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
+                >
+                  <span>Contacto</span>
+                  <span className="opacity-50 text-primary">→</span>
+                </button>
               </div>
             </motion.div>
           )}
@@ -185,15 +235,4 @@ function NavLink({ children, active, onClick }: NavLinkProps) {
   );
 }
 
-function MobileNavLink({ children, onClick }: NavLinkProps) {
-  // Revertimos a la implementación simple pero confiable
-  return (
-    <button
-      onClick={onClick}
-      className="font-medium text-gray-200 hover:text-white transition-colors py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
-    >
-      <span>{children}</span>
-      <span className="opacity-50 text-primary">→</span>
-    </button>
-  );
-}
+// Componente de navegación móvil eliminado - ahora usamos botones directamente en el código
