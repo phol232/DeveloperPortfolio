@@ -66,19 +66,26 @@ export function Header() {
     // Primero cerramos el menú móvil
     setIsOpen(false);
     
-    // Usamos setTimeout para asegurar que el menú se cierra antes de desplazarse
-    setTimeout(() => {
-      const element = document.getElementById(sectionId);
-      if (element) {
-        // Ajustamos el offset para diferentes dispositivos
-        const offset = window.innerWidth < 768 ? 60 : 80;
+    // Ejecutamos inmediatamente para mejorar la respuesta en iOS
+    const element = document.getElementById(sectionId);
+    if (element) {
+      // Ajustamos el offset para diferentes dispositivos
+      const offset = window.innerWidth < 768 ? 60 : 80;
+      
+      // Forzamos un pequeño retraso para mejorar la compatibilidad con iOS
+      requestAnimationFrame(() => {
+        // Definimos la posición exacta para mayor precisión
+        const top = element.getBoundingClientRect().top + window.pageYOffset - offset;
         
         window.scrollTo({
-          top: element.offsetTop - offset,
+          top: top,
           behavior: "smooth",
         });
-      }
-    }, 10);
+        
+        // Establecemos manualmente la sección activa para una respuesta inmediata
+        setActiveSection(sectionId);
+      });
+    }
   };
 
   return (
@@ -168,10 +175,32 @@ function NavLink({ children, active, onClick }: NavLinkProps) {
 }
 
 function MobileNavLink({ children, onClick }: NavLinkProps) {
+  // Mejoramos el manejo de eventos para iOS
+  const handleClick = (e: React.MouseEvent) => {
+    // Prevenimos comportamiento por defecto que puede causar problemas en iOS
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Agregamos feedback visual inmediato
+    const button = e.currentTarget;
+    button.classList.add('bg-primary/20');
+    
+    // Ejecutamos el callback con un pequeño retraso para mejorar la respuesta visual
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        button.classList.remove('bg-primary/20');
+        // Llamamos a la función original
+        onClick();
+      }, 50);
+    });
+  };
+  
   return (
     <button
-      onClick={onClick}
-      className="font-medium text-gray-200 hover:text-white transition-colors py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
+      onClick={handleClick}
+      // Agregamos -webkit-tap-highlight-color para mejorar feedback en iOS
+      className="font-medium text-gray-200 hover:text-white transition-colors py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between active:bg-primary/30"
+      style={{ WebkitTapHighlightColor: 'rgba(0,0,0,0)' }}
     >
       <span>{children}</span>
       <span className="opacity-50 text-primary">→</span>

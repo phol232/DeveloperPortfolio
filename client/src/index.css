@@ -2,6 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Mejoras para dispositivos táctiles e iOS */
+@layer base {
+  /* Eliminar el resaltado azul predeterminado en iOS */
+  button, a {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    -webkit-touch-callout: none;
+  }
+  
+  /* Asegurar que los eventos táctiles tengan prioridad en iOS */
+  html {
+    touch-action: manipulation;
+  }
+  
+  /* Mejorar la respuesta táctil para botones en iOS */
+  button:active {
+    transform: scale(0.98);
+  }
+}
+
 @layer base {
   * {
     @apply border-border;
