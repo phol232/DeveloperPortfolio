@@ -165,7 +165,7 @@ export const contactInfo = {
   location: "Huancayo, Perú",
   social: {
     github: "https://github.com/phol232",
-    linkedin: "https://www.linkedin.com/public-profile/settings?trk=d_flagship3_profile_self_view_public_profile",
+    linkedin: "https://www.linkedin.com/in/phol-edwin-taquiri-rojas-6b868a273/",
     twitter: "https://x.com/Pholxd",
     instagram: "https://www.instagram.com/pholj21?igsh=MXI1a3hkZHE3em5reg%3D%3D&utm_source=qr"
   }
