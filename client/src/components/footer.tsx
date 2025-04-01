@@ -15,11 +15,11 @@ export function Footer() {
           </div>
           
           <div className="flex flex-wrap justify-center gap-6 mb-6 md:mb-0">
-            <FooterLink href="#home">Home</FooterLink>
-            <FooterLink href="#services">Services</FooterLink>
-            <FooterLink href="#projects">Projects</FooterLink>
-            <FooterLink href="#experience">Experience</FooterLink>
-            <FooterLink href="#contact">Contact</FooterLink>
+            <FooterLink href="#home">Inicio</FooterLink>
+            <FooterLink href="#services">Servicios</FooterLink>
+            <FooterLink href="#projects">Proyectos</FooterLink>
+            <FooterLink href="#experience">Experiencia</FooterLink>
+            <FooterLink href="#contact">Contacto</FooterLink>
           </div>
           
           <div>
