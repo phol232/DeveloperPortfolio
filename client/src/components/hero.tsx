@@ -33,7 +33,7 @@ export function Hero() {
                 className="text-primary font-medium mb-2"
                 variants={item}
               >
-                Soy Phol!
+                I'm Phol!
               </motion.p>
               <motion.h1 
                 className="text-5xl md:text-6xl font-bold mb-6"
@@ -41,7 +41,7 @@ export function Hero() {
               >
                 <span className="block">Web Developer +</span>
                 <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                  UX Designer
+                  App Developper
                 </span>
               </motion.h1>
               <motion.p 
