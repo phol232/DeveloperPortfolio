@@ -11,7 +11,7 @@ export function Footer() {
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
               <span className="text-white font-bold text-lg">D</span>
             </div>
-            <span className="ml-2 font-bold tracking-tight">DevPortfolio</span>
+            <span className="ml-2 font-bold tracking-tight">PHOL EDWIN TAQUIRI ROJAS</span>
           </div>
           
           <div className="flex flex-wrap justify-center gap-6 mb-6 md:mb-0">
