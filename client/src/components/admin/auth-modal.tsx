@@ -40,9 +40,8 @@ export function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
       
       if (loginData.email === validCredentials.email && 
           loginData.password === validCredentials.password) {
-        // Mostrar el panel administrativo local
-        onSuccess();
-        onClose();
+        // Redirigir al panel administrativo local
+        window.location.href = "/admin";
       } else {
         alert("Credenciales incorrectas. Use:\nEmail: admin@demo.com\nContraseña: admin123");
       }
