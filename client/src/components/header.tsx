@@ -175,7 +175,7 @@ export function Header() {
                 </button>
 
                 <button 
-                  onClick={()={() => {
+                  onClick={() => {
                     setIsOpen(false);
                     setTimeout(() => {
                       const element = document.getElementById('projects');
