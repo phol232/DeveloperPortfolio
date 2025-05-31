@@ -12,6 +12,21 @@ import {
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Table,
   TableBody,
   TableCell,
@@ -50,7 +65,7 @@ interface AdminPanelProps {
 
 export function AdminPanel({ onClose }: AdminPanelProps) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [courses] = useState<Course[]>([
+  const [courses, setCourses] = useState<Course[]>([
     {
       id: 1,
       name: "Desarrollo Web Full Stack",
@@ -102,6 +117,87 @@ export function AdminPanel({ onClose }: AdminPanelProps) {
       image: "/api/placeholder/40/40"
     }
   ]);
+
+  // Modal states
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  
+  // Form states
+  const [formData, setFormData] = useState({
+    name: "",
+    instructor: "",
+    category: "",
+    price: 0,
+    status: "Draft" as Course["status"]
+  });
+
+  // Form handlers
+  const handleAddCourse = (e: React.FormEvent) => {
+    e.preventDefault();
+    const newCourse: Course = {
+      id: Math.max(...courses.map(c => c.id)) + 1,
+      name: formData.name,
+      instructor: formData.instructor,
+      category: formData.category,
+      price: formData.price,
+      students: 0,
+      status: formData.status,
+      image: "/api/placeholder/40/40"
+    };
+    setCourses([...courses, newCourse]);
+    setShowAddModal(false);
+    resetForm();
+  };
+
+  const handleEditCourse = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedCourse) return;
+    
+    setCourses(courses.map(course => 
+      course.id === selectedCourse.id 
+        ? { ...course, ...formData }
+        : course
+    ));
+    setShowEditModal(false);
+    resetForm();
+    setSelectedCourse(null);
+  };
+
+  const handleDeleteCourse = () => {
+    if (!selectedCourse) return;
+    setCourses(courses.filter(course => course.id !== selectedCourse.id));
+    setShowDeleteModal(false);
+    setSelectedCourse(null);
+  };
+
+  const resetForm = () => {
+    setFormData({
+      name: "",
+      instructor: "",
+      category: "",
+      price: 0,
+      status: "Draft"
+    });
+  };
+
+  const openEditModal = (course: Course) => {
+    setSelectedCourse(course);
+    setFormData({
+      name: course.name,
+      instructor: course.instructor,
+      category: course.category,
+      price: course.price,
+      status: course.status
+    });
+    setShowEditModal(true);
+  };
+
+  const openDeleteModal = (course: Course) => {
+    setSelectedCourse(course);
+    setShowDeleteModal(true);
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -220,7 +316,7 @@ export function AdminPanel({ onClose }: AdminPanelProps) {
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle>Gestión de Cursos</CardTitle>
-              <Button>
+              <Button onClick={() => setShowAddModal(true)}>
                 <Plus className="h-4 w-4 mr-2" />
                 Agregar Curso
               </Button>
@@ -286,11 +382,14 @@ export function AdminPanel({ onClose }: AdminPanelProps) {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => openEditModal(course)}>
                             <Edit className="h-4 w-4 mr-2" />
                             Editar
                           </DropdownMenuItem>
-                          <DropdownMenuItem className="text-red-600">
+                          <DropdownMenuItem 
+                            className="text-red-600"
+                            onClick={() => openDeleteModal(course)}
+                          >
                             <Trash2 className="h-4 w-4 mr-2" />
                             Eliminar
                           </DropdownMenuItem>
@@ -304,6 +403,163 @@ export function AdminPanel({ onClose }: AdminPanelProps) {
           </CardContent>
         </Card>
       </div>
+
+      {/* Add Course Modal */}
+      <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Agregar Nuevo Curso</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleAddCourse} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Nombre del Curso</Label>
+              <Input
+                id="name"
+                value={formData.name}
+                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="instructor">Instructor</Label>
+              <Input
+                id="instructor"
+                value={formData.instructor}
+                onChange={(e) => setFormData({...formData, instructor: e.target.value})}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="category">Categoría</Label>
+              <Input
+                id="category"
+                value={formData.category}
+                onChange={(e) => setFormData({...formData, category: e.target.value})}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="price">Precio</Label>
+              <Input
+                id="price"
+                type="number"
+                value={formData.price}
+                onChange={(e) => setFormData({...formData, price: Number(e.target.value)})}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="status">Estado</Label>
+              <Select value={formData.status} onValueChange={(value: Course["status"]) => setFormData({...formData, status: value})}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Active">Active</SelectItem>
+                  <SelectItem value="Inactive">Inactive</SelectItem>
+                  <SelectItem value="Draft">Draft</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setShowAddModal(false)}>
+                Cancelar
+              </Button>
+              <Button type="submit">Agregar Curso</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Course Modal */}
+      <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Editar Curso</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleEditCourse} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="edit-name">Nombre del Curso</Label>
+              <Input
+                id="edit-name"
+                value={formData.name}
+                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-instructor">Instructor</Label>
+              <Input
+                id="edit-instructor"
+                value={formData.instructor}
+                onChange={(e) => setFormData({...formData, instructor: e.target.value})}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-category">Categoría</Label>
+              <Input
+                id="edit-category"
+                value={formData.category}
+                onChange={(e) => setFormData({...formData, category: e.target.value})}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-price">Precio</Label>
+              <Input
+                id="edit-price"
+                type="number"
+                value={formData.price}
+                onChange={(e) => setFormData({...formData, price: Number(e.target.value)})}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-status">Estado</Label>
+              <Select value={formData.status} onValueChange={(value: Course["status"]) => setFormData({...formData, status: value})}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Active">Active</SelectItem>
+                  <SelectItem value="Inactive">Inactive</SelectItem>
+                  <SelectItem value="Draft">Draft</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setShowEditModal(false)}>
+                Cancelar
+              </Button>
+              <Button type="submit">Guardar Cambios</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Course Modal */}
+      <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Eliminar Curso</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-sm text-muted-foreground">
+              ¿Estás seguro de que quieres eliminar el curso "{selectedCourse?.name}"? 
+              Esta acción no se puede deshacer.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowDeleteModal(false)}>
+              Cancelar
+            </Button>
+            <Button variant="destructive" onClick={handleDeleteCourse}>
+              Eliminar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
