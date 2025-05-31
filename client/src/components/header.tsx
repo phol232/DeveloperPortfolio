@@ -138,7 +138,6 @@ export function Header() {
                 Admin
                 <span className="absolute left-0 bottom-[-2px] h-[2px] bg-gradient-to-r from-primary to-accent transition-all duration-300 w-0 hover:w-full"></span>
               </button>
-
             </div>
 
             <button 
@@ -149,230 +148,117 @@ export function Header() {
             </button>
           </nav>
 
-        {/* Mobile Menu */}
-        <AnimatePresence>
-          {isOpen && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="md:hidden mt-4 pb-4 overflow-hidden fixed inset-x-0 bg-background/95 backdrop-blur-md border-b border-primary/10 px-6"
-              style={{ top: "64px", zIndex: 40 }}
-            >
-              <div className="flex flex-col space-y-4 py-3 max-w-md mx-auto">
-                <button 
-                  onClick={() => {
-                    setIsOpen(false);
-                    setTimeout(() => {
-                      const element = document.getElementById('home');
-                      if (element) element.scrollIntoView({ behavior: 'smooth' });
-                    }, 100);
-                  }}
-                  className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
-                >
-                  <span>Inicio</span>
-                  <span className="opacity-50 text-primary">→</span>
-                </button>
+          {/* Mobile Menu */}
+          <AnimatePresence>
+            {isOpen && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="md:hidden mt-4 pb-4 overflow-hidden fixed inset-x-0 bg-background/95 backdrop-blur-md border-b border-primary/10 px-6"
+                style={{ top: "64px", zIndex: 40 }}
+              >
+                <div className="flex flex-col space-y-4 py-3 max-w-md mx-auto">
+                  <button 
+                    onClick={() => {
+                      setIsOpen(false);
+                      setTimeout(() => {
+                        const element = document.getElementById('home');
+                        if (element) element.scrollIntoView({ behavior: 'smooth' });
+                      }, 100);
+                    }}
+                    className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
+                  >
+                    <span>Inicio</span>
+                    <span className="opacity-50 text-primary">→</span>
+                  </button>
 
-                <button 
-                  onClick={() => {
-                    setIsOpen(false);
-                    setTimeout(() => {
-                      const element = document.getElementById('services');
-                      if (element) element.scrollIntoView({ behavior: 'smooth' });
-                    }, 100);
-                  }}
-                  className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
-                >
-                  <span>Servicios</span>
-                  <span className="opacity-50 text-primary">→</span>
-                </button>
+                  <button 
+                    onClick={() => {
+                      setIsOpen(false);
+                      setTimeout(() => {
+                        const element = document.getElementById('services');
+                        if (element) element.scrollIntoView({ behavior: 'smooth' });
+                      }, 100);
+                    }}
+                    className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
+                  >
+                    <span>Servicios</span>
+                    <span className="opacity-50 text-primary">→</span>
+                  </button>
 
-                <button 
-                  onClick={() => {
-                    setIsOpen(false);
-                    setTimeout(() => {
-                      const element = document.getElementById('projects');
-                      if (element) element.scrollIntoView({ behavior: 'smooth' });
-                    }, 100);
-                  }}
-                  className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
-                >
-                  <span>Proyectos</span>
-                  <span className="opacity-50 text-primary">→</span>
-                </button>
+                  <button 
+                    onClick={() => {
+                      setIsOpen(false);
+                      setTimeout(() => {
+                        const element = document.getElementById('projects');
+                        if (element) element.scrollIntoView({ behavior: 'smooth' });
+                      }, 100);
+                    }}
+                    className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
+                  >
+                    <span>Proyectos</span>
+                    <span className="opacity-50 text-primary">→</span>
+                  </button>
 
-                <button 
-                  onClick={() => {
-                    setIsOpen(false);
-                    setTimeout(() => {
-                      const element = document.getElementById('experience');
-                      if (element) element.scrollIntoView({ behavior: 'smooth' });
-                    }, 100);
-                  }}
-                  className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
-                >
-                  <span>Experiencia</span>
-                  <span className="opacity-50 text-primary">→</span>
-                </button>
+                  <button 
+                    onClick={() => {
+                      setIsOpen(false);
+                      setTimeout(() => {
+                        const element = document.getElementById('experience');
+                        if (element) element.scrollIntoView({ behavior: 'smooth' });
+                      }, 100);
+                    }}
+                    className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
+                  >
+                    <span>Experiencia</span>
+                    <span className="opacity-50 text-primary">→</span>
+                  </button>
 
-                <button 
-                  onClick={() => {
-                    setIsOpen(false);
-                    setTimeout(() => {
-                      const element = document.getElementById('contact');
-                      if (element) element.scrollIntoView({ behavior: 'smooth' });
-                    }, 100);
-                  }}
-                  className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
-                >
-                  <span>Contacto</span>
-                  <span className="opacity-50 text-primary">→</span>
-                </button>
+                  <button 
+                    onClick={() => {
+                      setIsOpen(false);
+                      setTimeout(() => {
+                        const element = document.getElementById('contact');
+                        if (element) element.scrollIntoView({ behavior: 'smooth' });
+                      }, 100);
+                    }}
+                    className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
+                  >
+                    <span>Contacto</span>
+                    <span className="opacity-50 text-primary">→</span>
+                  </button>
 
-                <button 
-                  onClick={() => {
-                    setIsOpen(false);
-                    setTimeout(() => {
-                      const element = document.getElementById('cursos');
-                      if (element) element.scrollIntoView({ behavior: 'smooth' });
-                    }, 100);
-                  }}
-                  className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
-                >
-                  <span>Cursos Linea</span>
-                  <span className="opacity-50 text-primary">→</span>
-                </button>
+                  <button 
+                    onClick={() => {
+                      setIsOpen(false);
+                      setTimeout(() => {
+                        const element = document.getElementById('cursos');
+                        if (element) element.scrollIntoView({ behavior: 'smooth' });
+                      }, 100);
+                    }}
+                    className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
+                  >
+                    <span>Cursos Linea</span>
+                    <span className="opacity-50 text-primary">→</span>
+                  </button>
 
-                <button 
-                  onClick={() => {
-                    console.log("Mobile Admin button clicked");
-                    setShowAuthModal(true);
-                    setIsOpen(false);
-                  }}
-                  className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
-                >
-                  <span>Admin</span>
-                  <span className="opacity-50 text-primary">→</span>
-                </button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-        </div>
-
-      {/* Mobile Menu */}
-        <AnimatePresence>
-          {isOpen && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="md:hidden mt-4 pb-4 overflow-hidden fixed inset-x-0 bg-background/95 backdrop-blur-md border-b border-primary/10 px-6"
-              style={{ top: "64px", zIndex: 40 }}
-            >
-              <div className="flex flex-col space-y-4 py-3 max-w-md mx-auto">
-                <button 
-                  onClick={() => {
-                    setIsOpen(false);
-                    setTimeout(() => {
-                      const element = document.getElementById('home');
-                      if (element) element.scrollIntoView({ behavior: 'smooth' });
-                    }, 100);
-                  }}
-                  className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
-                >
-                  <span>Inicio</span>
-                  <span className="opacity-50 text-primary">→</span>
-                </button>
-
-                <button 
-                  onClick={() => {
-                    setIsOpen(false);
-                    setTimeout(() => {
-                      const element = document.getElementById('services');
-                      if (element) element.scrollIntoView({ behavior: 'smooth' });
-                    }, 100);
-                  }}
-                  className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
-                >
-                  <span>Servicios</span>
-                  <span className="opacity-50 text-primary">→</span>
-                </button>
-
-                <button 
-                  onClick={() => {
-                    setIsOpen(false);
-                    setTimeout(() => {
-                      const element = document.getElementById('projects');
-                      if (element) element.scrollIntoView({ behavior: 'smooth' });
-                    }, 100);
-                  }}
-                  className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
-                >
-                  <span>Proyectos</span>
-                  <span className="opacity-50 text-primary">→</span>
-                </button>
-
-                <button 
-                  onClick={() => {
-                    setIsOpen(false);
-                    setTimeout(() => {
-                      const element = document.getElementById('experience');
-                      if (element) element.scrollIntoView({ behavior: 'smooth' });
-                    }, 100);
-                  }}
-                  className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
-                >
-                  <span>Experiencia</span>
-                  <span className="opacity-50 text-primary">→</span>
-                </button>
-
-                <button 
-                  onClick={() => {
-                    setIsOpen(false);
-                    setTimeout(() => {
-                      const element = document.getElementById('contact');
-                      if (element) element.scrollIntoView({ behavior: 'smooth' });
-                    }, 100);
-                  }}
-                  className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
-                >
-                  <span>Contacto</span>
-                  <span className="opacity-50 text-primary">→</span>
-                </button>
-
-                <button 
-                  onClick={() => {
-                    setIsOpen(false);
-                    setTimeout(() => {
-                      const element = document.getElementById('cursos');
-                      if (element) element.scrollIntoView({ behavior: 'smooth' });
-                    }, 100);
-                  }}
-                  className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
-                >
-                  <span>Cursos Linea</span>
-                  <span className="opacity-50 text-primary">→</span>
-                </button>
-
-                <button 
-                  onClick={() => {
-                    console.log("Mobile Admin button clicked");
-                    setShowAuthModal(true);
-                    setIsOpen(false);
-                  }}
-                  className="block px-3 py-2 text-base font-medium rounded-md transition-colors text-gray-300 hover:text-white hover:bg-gray-700"
-                >
-                  <span>Admin</span>
-                  <span className="opacity-50 text-primary">→</span>
-                </button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+                  <button 
+                    onClick={() => {
+                      console.log("Mobile Admin button clicked");
+                      setShowAuthModal(true);
+                      setIsOpen(false);
+                    }}
+                    className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
+                  >
+                    <span>Admin</span>
+                    <span className="opacity-50 text-primary">→</span>
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </header>
 
@@ -413,5 +299,3 @@ function NavLink({ children, active, onClick }: NavLinkProps) {
     </button>
   );
 }
-
-// Componente de navegación móvil eliminado - ahora usamos botones directamente en el código
