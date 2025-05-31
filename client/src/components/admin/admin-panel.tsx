@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -61,7 +60,7 @@ interface Course {
 }
 
 interface AdminPanelProps {
-  onClose: () => void;
+  onClose?: () => void;
 }
 
 export function AdminPanel({ onClose }: AdminPanelProps) {
@@ -244,13 +243,13 @@ export function AdminPanel({ onClose }: AdminPanelProps) {
                 </Avatar>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={onClose}>
+                <DropdownMenuItem onClick={onClose ? onClose : undefined}>
                   <X className="h-4 w-4 mr-2" />
                   Cerrar Sesión
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <Button variant="ghost" size="sm" onClick={onClose}>
+            <Button variant="ghost" size="sm" onClick={onClose ? onClose : undefined}>
               <X className="h-4 w-4" />
             </Button>
           </div>
