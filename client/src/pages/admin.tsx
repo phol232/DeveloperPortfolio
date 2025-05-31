@@ -7,9 +7,11 @@ import { AuthModal } from "@/components/admin/auth-modal";
 export default function Admin() {
   const [, setLocation] = useLocation();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(!isAuthenticated);
 
   const handleAuthSuccess = () => {
     setIsAuthenticated(true);
+    setShowAuthModal(false);
   };
 
   const handleClose = () => {
@@ -19,7 +21,7 @@ export default function Admin() {
   if (!isAuthenticated) {
     return (
       <AuthModal 
-        isOpen={true} 
+        isOpen={showAuthModal} 
         onClose={handleClose}
         onSuccess={handleAuthSuccess}
       />
