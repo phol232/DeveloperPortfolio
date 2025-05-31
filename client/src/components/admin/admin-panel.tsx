@@ -134,6 +134,11 @@ export function AdminPanel({ onClose }: AdminPanelProps) {
     status: "Draft" as Course["status"]
   });
 
+  // Nueva función para cerrar sesión y redirigir
+  const handleLogout = () => {
+    window.location.href = "/";
+  };
+
   // Form handlers
   const handleAddCourse = (e: React.FormEvent) => {
     e.preventDefault();
@@ -243,13 +248,13 @@ export function AdminPanel({ onClose }: AdminPanelProps) {
                 </Avatar>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={onClose ? onClose : undefined}>
+                <DropdownMenuItem onClick={handleLogout}>
                   <X className="h-4 w-4 mr-2" />
                   Cerrar Sesión
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <Button variant="ghost" size="sm" onClick={onClose ? onClose : undefined}>
+            <Button variant="ghost" size="sm" onClick={handleLogout}>
               <X className="h-4 w-4" />
             </Button>
           </div>
