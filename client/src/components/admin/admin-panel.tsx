@@ -34,6 +34,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { 
   Search, 
   Filter, 
@@ -64,6 +65,7 @@ interface AdminPanelProps {
 }
 
 export function AdminPanel({ onClose }: AdminPanelProps) {
+  const isMobile = useIsMobile();
   const [searchTerm, setSearchTerm] = useState("");
   const [courses, setCourses] = useState<Course[]>([
     {
@@ -338,43 +340,22 @@ export function AdminPanel({ onClose }: AdminPanelProps) {
             </div>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Curso</TableHead>
-                  <TableHead>Instructor</TableHead>
-                  <TableHead>Categoría</TableHead>
-                  <TableHead>Precio</TableHead>
-                  <TableHead>Estudiantes</TableHead>
-                  <TableHead>Estado</TableHead>
-                  <TableHead>Acciones</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+            {isMobile ? (
+              /* Mobile Cards View */
+              <div className="space-y-4">
                 {filteredCourses.map((course) => (
-                  <TableRow key={course.id}>
-                    <TableCell>
+                  <Card key={course.id} className="p-4">
+                    <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-3">
-                        <Avatar className="h-10 w-10">
+                        <Avatar className="h-12 w-12">
                           <AvatarImage src={course.image} />
                           <AvatarFallback>{course.name.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <div>
-                          <div className="font-medium">{course.name}</div>
+                          <div className="font-medium text-base">{course.name}</div>
                           <div className="text-sm text-gray-500">ID: {course.id}</div>
                         </div>
                       </div>
-                    </TableCell>
-                    <TableCell>{course.instructor}</TableCell>
-                    <TableCell>{course.category}</TableCell>
-                    <TableCell>${course.price}</TableCell>
-                    <TableCell>{course.students.toLocaleString()}</TableCell>
-                    <TableCell>
-                      <Badge className={getStatusColor(course.status)}>
-                        {course.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" className="h-8 w-8 p-0">
@@ -395,11 +376,100 @@ export function AdminPanel({ onClose }: AdminPanelProps) {
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium text-gray-600">Instructor:</span>
+                        <span className="text-sm">{course.instructor}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium text-gray-600">Categoría:</span>
+                        <span className="text-sm">{course.category}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium text-gray-600">Precio:</span>
+                        <span className="text-sm font-bold">${course.price}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium text-gray-600">Estudiantes:</span>
+                        <span className="text-sm">{course.students.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium text-gray-600">Estado:</span>
+                        <Badge className={getStatusColor(course.status)}>
+                          {course.status}
+                        </Badge>
+                      </div>
+                    </div>
+                  </Card>
                 ))}
-              </TableBody>
-            </Table>
+              </div>
+            ) : (
+              /* Desktop Table View */
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Curso</TableHead>
+                    <TableHead>Instructor</TableHead>
+                    <TableHead>Categoría</TableHead>
+                    <TableHead>Precio</TableHead>
+                    <TableHead>Estudiantes</TableHead>
+                    <TableHead>Estado</TableHead>
+                    <TableHead>Acciones</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredCourses.map((course) => (
+                    <TableRow key={course.id}>
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          <Avatar className="h-10 w-10">
+                            <AvatarImage src={course.image} />
+                            <AvatarFallback>{course.name.charAt(0)}</AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <div className="font-medium">{course.name}</div>
+                            <div className="text-sm text-gray-500">ID: {course.id}</div>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>{course.instructor}</TableCell>
+                      <TableCell>{course.category}</TableCell>
+                      <TableCell>${course.price}</TableCell>
+                      <TableCell>{course.students.toLocaleString()}</TableCell>
+                      <TableCell>
+                        <Badge className={getStatusColor(course.status)}>
+                          {course.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => openEditModal(course)}>
+                              <Edit className="h-4 w-4 mr-2" />
+                              Editar
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              className="text-red-600"
+                              onClick={() => openDeleteModal(course)}
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Eliminar
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
           </CardContent>
         </Card>
       </div>
