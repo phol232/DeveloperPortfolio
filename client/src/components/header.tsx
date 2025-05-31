@@ -114,6 +114,13 @@ export function Header() {
             <NavLink active={activeSection === "contact"} onClick={() => scrollToSection("contact")}>
               Contacto
             </NavLink>
+            <NavLink active={activeSection === "cursos"} onClick={() => scrollToSection("cursos")}>
+              Cursos Linea
+            </NavLink>
+            <NavLink active={activeSection === "admin"} onClick={() => scrollToSection("admin")}>
+              Admin
+            </NavLink>
+            
           </div>
           
           <button 
