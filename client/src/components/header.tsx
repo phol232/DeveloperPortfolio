@@ -90,60 +90,179 @@ export function Header() {
     }
   };
 
+  // Si está mostrando el panel admin, no renderizar el header normal
+  if (showAdminPanel) {
+    return <AdminPanel onClose={() => setShowAdminPanel(false)} />;
+  }
+
   return (
-    <header className="fixed top-0 left-0 right-0 bg-background/80 backdrop-blur-md z-50">
-      <div className="container mx-auto px-6 py-5">
-        <nav className="flex items-center justify-between">
-          <div className="flex items-center">
-            <div className="text-xl font-bold text-white flex items-center">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                <span className="text-white font-bold text-lg">D</span>
+    <>
+      <header className="fixed top-0 left-0 right-0 bg-background/80 backdrop-blur-md z-50">
+        <div className="container mx-auto px-6 py-5">
+          <nav className="flex items-center justify-between">
+            <div className="flex items-center">
+              <div className="text-xl font-bold text-white flex items-center">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">D</span>
+                </div>
+                <span className="ml-2 font-bold tracking-tight">PHOL EDWIN TAQUIRI ROJAS</span>
               </div>
-              <span className="ml-2 font-bold tracking-tight">PHOL EDWIN TAQUIRI ROJAS</span>
             </div>
-          </div>
 
-          <div className="hidden md:flex space-x-8">
-            <NavLink active={activeSection === "home"} onClick={() => scrollToSection("home")}>
-              Inicio
-            </NavLink>
-            <NavLink active={activeSection === "services"} onClick={() => scrollToSection("services")}>
-              Servicios
-            </NavLink>
-            <NavLink active={activeSection === "projects"} onClick={() => scrollToSection("projects")}>
-              Proyectos
-            </NavLink>
-            <NavLink active={activeSection === "experience"} onClick={() => scrollToSection("experience")}>
-              Experiencia
-            </NavLink>
-            <NavLink active={activeSection === "contact"} onClick={() => scrollToSection("contact")}>
-              Contacto
-            </NavLink>
-            <NavLink active={activeSection === "cursos"} onClick={() => scrollToSection("cursos")}>
-              Cursos Linea
-            </NavLink>
-            <button
-              onClick={() => {
-                console.log("Admin button clicked");
-                setShowAuthModal(true);
-              }}
-              className="relative font-medium hover:text-white transition-colors nav-link text-gray-200"
+            <div className="hidden md:flex space-x-8">
+              <NavLink active={activeSection === "home"} onClick={() => scrollToSection("home")}>
+                Inicio
+              </NavLink>
+              <NavLink active={activeSection === "services"} onClick={() => scrollToSection("services")}>
+                Servicios
+              </NavLink>
+              <NavLink active={activeSection === "projects"} onClick={() => scrollToSection("projects")}>
+                Proyectos
+              </NavLink>
+              <NavLink active={activeSection === "experience"} onClick={() => scrollToSection("experience")}>
+                Experiencia
+              </NavLink>
+              <NavLink active={activeSection === "contact"} onClick={() => scrollToSection("contact")}>
+                Contacto
+              </NavLink>
+              <NavLink active={activeSection === "cursos"} onClick={() => scrollToSection("cursos")}>
+                Cursos Linea
+              </NavLink>
+              <button
+                onClick={() => {
+                  console.log("Admin button clicked");
+                  setShowAuthModal(true);
+                }}
+                className="relative font-medium hover:text-white transition-colors nav-link text-gray-200"
+              >
+                Admin
+                <span className="absolute left-0 bottom-[-2px] h-[2px] bg-gradient-to-r from-primary to-accent transition-all duration-300 w-0 hover:w-full"></span>
+              </button>
+
+            </div>
+
+            <button 
+              className="md:hidden text-white focus:outline-none" 
+              onClick={() => setIsOpen(!isOpen)}
             >
-              Admin
-              <span className="absolute left-0 bottom-[-2px] h-[2px] bg-gradient-to-r from-primary to-accent transition-all duration-300 w-0 hover:w-full"></span>
+              {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
-
-          </div>
-
-          <button 
-            className="md:hidden text-white focus:outline-none" 
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-        </nav>
+          </nav>
 
         {/* Mobile Menu */}
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="md:hidden mt-4 pb-4 overflow-hidden fixed inset-x-0 bg-background/95 backdrop-blur-md border-b border-primary/10 px-6"
+              style={{ top: "64px", zIndex: 40 }}
+            >
+              <div className="flex flex-col space-y-4 py-3 max-w-md mx-auto">
+                <button 
+                  onClick={() => {
+                    setIsOpen(false);
+                    setTimeout(() => {
+                      const element = document.getElementById('home');
+                      if (element) element.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                  }}
+                  className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
+                >
+                  <span>Inicio</span>
+                  <span className="opacity-50 text-primary">→</span>
+                </button>
+
+                <button 
+                  onClick={() => {
+                    setIsOpen(false);
+                    setTimeout(() => {
+                      const element = document.getElementById('services');
+                      if (element) element.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                  }}
+                  className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
+                >
+                  <span>Servicios</span>
+                  <span className="opacity-50 text-primary">→</span>
+                </button>
+
+                <button 
+                  onClick={() => {
+                    setIsOpen(false);
+                    setTimeout(() => {
+                      const element = document.getElementById('projects');
+                      if (element) element.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                  }}
+                  className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
+                >
+                  <span>Proyectos</span>
+                  <span className="opacity-50 text-primary">→</span>
+                </button>
+
+                <button 
+                  onClick={() => {
+                    setIsOpen(false);
+                    setTimeout(() => {
+                      const element = document.getElementById('experience');
+                      if (element) element.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                  }}
+                  className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
+                >
+                  <span>Experiencia</span>
+                  <span className="opacity-50 text-primary">→</span>
+                </button>
+
+                <button 
+                  onClick={() => {
+                    setIsOpen(false);
+                    setTimeout(() => {
+                      const element = document.getElementById('contact');
+                      if (element) element.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                  }}
+                  className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
+                >
+                  <span>Contacto</span>
+                  <span className="opacity-50 text-primary">→</span>
+                </button>
+
+                <button 
+                  onClick={() => {
+                    setIsOpen(false);
+                    setTimeout(() => {
+                      const element = document.getElementById('cursos');
+                      if (element) element.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                  }}
+                  className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
+                >
+                  <span>Cursos Linea</span>
+                  <span className="opacity-50 text-primary">→</span>
+                </button>
+
+                <button 
+                  onClick={() => {
+                    console.log("Mobile Admin button clicked");
+                    setShowAuthModal(true);
+                    setIsOpen(false);
+                  }}
+                  className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
+                >
+                  <span>Admin</span>
+                  <span className="opacity-50 text-primary">→</span>
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        </div>
+
+      {/* Mobile Menu */}
         <AnimatePresence>
           {isOpen && (
             <motion.div
@@ -254,7 +373,8 @@ export function Header() {
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+        </div>
+      </header>
 
       {/* Auth Modal */}
       <AuthModal 
@@ -266,12 +386,7 @@ export function Header() {
           setShowAdminPanel(true);
         }}
       />
-
-      {/* Admin Panel */}
-      {showAdminPanel && (
-        <AdminPanel onClose={() => setShowAdminPanel(false)} />
-      )}
-    </header>
+    </>
   );
 }
 
