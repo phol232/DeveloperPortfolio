@@ -138,10 +138,20 @@ export function AdminPanel({ onClose }: AdminPanelProps) {
             <h1 className="text-2xl font-bold">Panel Administrativo</h1>
           </div>
           <div className="flex items-center gap-4">
-            <Avatar>
-              <AvatarImage src="/api/placeholder/32/32" />
-              <AvatarFallback>AD</AvatarFallback>
-            </Avatar>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Avatar className="cursor-pointer">
+                  <AvatarImage src="/api/placeholder/32/32" />
+                  <AvatarFallback>AD</AvatarFallback>
+                </Avatar>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={onClose}>
+                  <X className="h-4 w-4 mr-2" />
+                  Cerrar Sesión
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Button variant="ghost" size="sm" onClick={onClose}>
               <X className="h-4 w-4" />
             </Button>
