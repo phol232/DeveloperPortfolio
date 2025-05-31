@@ -1,0 +1,19 @@
+2025-05-31 23:15:12,574 - semgrep.notifications - WARNING - METRICS: Using configs from the Registry (like --config=p/ci) reports pseudonymous rule metrics to semgrep.dev.
+To disable Registry rule metrics, use "--metrics=off".
+Using configs only from local files (like --config=xyz.yml) does not enable metrics.
+
+More information: https://semgrep.dev/docs/metrics
+
+2025-05-31 23:15:12,575 - semgrep.run_scan - DEBUG - semgrep version 1.2.0
+2025-05-31 23:15:12,580 - semgrep.config_resolver - DEBUG - Loading local config from /home/runner/workspace/.config/.semgrep/semgrep_rules.json
+2025-05-31 23:15:12,581 - semgrep.config_resolver - DEBUG - Done loading local config from /home/runner/workspace/.config/.semgrep/semgrep_rules.json
+2025-05-31 23:15:12,584 - semgrep.config_resolver - DEBUG - Saving rules to /tmp/semgrep-ci0jcacr.rules
+2025-05-31 23:15:12,735 - semgrep.semgrep_core - DEBUG - Failed to open resource semgrep-core-proprietary: [Errno 2] No such file or directory: '/tmp/_MEITwihY0/semgrep/bin/semgrep-core-proprietary'.
+2025-05-31 23:15:13,138 - semgrep.rule_lang - DEBUG - semgrep-core validation response: valid=True
+2025-05-31 23:15:13,138 - semgrep.rule_lang - DEBUG - semgrep-core validation succeeded
+2025-05-31 23:15:13,138 - semgrep.rule_lang - DEBUG - RPC validation succeeded
+2025-05-31 23:15:13,138 - semgrep.config_resolver - DEBUG - loaded 1 configs in 0.5587520599365234
+2025-05-31 23:15:13,202 - semgrep.run_scan - VERBOSE - running 711 rules from 1 config /home/runner/workspace/.config/.semgrep/semgrep_rules.json_0
+2025-05-31 23:15:13,203 - semgrep.run_scan - VERBOSE - No .semgrepignore found. Using default .semgrepignore rules. See the docs for the list of default ignores: https://semgrep.dev/docs/cli-usage/#ignore-files
+2025-05-31 23:15:13,205 - semgrep.run_scan - VERBOSE - Rules:
+2025-05-31 23:15:13,205 - semgrep.run_scan - VERBOSE - <SKIPPED DATA (too many entries; use --max-log-list-entries)>
