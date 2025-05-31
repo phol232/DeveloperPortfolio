@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Shield } from "lucide-react";
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
-  
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
   // Handle scroll to update active section
   useEffect(() => {
     const handleScroll = () => {
@@ -14,22 +17,22 @@ export function Header() {
       // Ajustamos el offset para diferentes dispositivos
       const offset = window.innerWidth < 768 ? 150 : 100;
       const scrollPosition = window.scrollY + offset;
-      
+
       // Encontrar la sección más cercana al scroll actual
       let activeSection = sections[0];
       let minDistance = Infinity;
-      
+
       for (const section of sections) {
         const element = document.getElementById(section);
         if (element) {
           const offsetTop = element.offsetTop;
           const distance = Math.abs(scrollPosition - offsetTop);
-          
+
           if (distance < minDistance) {
             minDistance = distance;
             activeSection = section;
           }
-          
+
           // Si estamos claramente dentro de una sección, la activamos inmediatamente
           const offsetHeight = element.offsetHeight;
           if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
@@ -38,11 +41,11 @@ export function Header() {
           }
         }
       }
-      
+
       // Si no encontramos una sección clara, usamos la más cercana
       setActiveSection(activeSection);
     };
-    
+
     // Throttle para mejor rendimiento en móviles
     let ticking = false;
     const throttledScroll = () => {
@@ -54,18 +57,18 @@ export function Header() {
         ticking = true;
       }
     };
-    
+
     window.addEventListener("scroll", throttledScroll);
     // Ejecutar una vez al cargar para establecer la sección inicial
     setTimeout(handleScroll, 100);
-    
+
     return () => window.removeEventListener("scroll", throttledScroll);
   }, []);
-  
+
   const scrollToSection = (sectionId: string) => {
     // Primero cerramos el menú móvil
     setIsOpen(false);
-    
+
     // Simple y efectivo - funciona en iOS y Android
     const element = document.getElementById(sectionId);
     if (element) {
@@ -73,13 +76,13 @@ export function Header() {
       const offset = window.innerWidth < 768 ? 60 : 80;
       const elementPosition = element.getBoundingClientRect().top;
       const offsetPosition = elementPosition + window.pageYOffset - offset;
-      
+
       // Usamos la forma más simple y confiable de scroll
       window.scrollTo({
         top: offsetPosition,
         behavior: "smooth"
       });
-      
+
       // Actualizamos manualmente la sección activa
       setActiveSection(sectionId);
     }
@@ -97,7 +100,7 @@ export function Header() {
               <span className="ml-2 font-bold tracking-tight">PHOL EDWIN TAQUIRI ROJAS</span>
             </div>
           </div>
-          
+
           <div className="hidden md:flex space-x-8">
             <NavLink active={activeSection === "home"} onClick={() => scrollToSection("home")}>
               Inicio
@@ -120,9 +123,9 @@ export function Header() {
             <NavLink active={activeSection === "admin"} onClick={() => scrollToSection("admin")}>
               Admin
             </NavLink>
-            
+
           </div>
-          
+
           <button 
             className="md:hidden text-white focus:outline-none" 
             onClick={() => setIsOpen(!isOpen)}
@@ -130,7 +133,7 @@ export function Header() {
             {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </nav>
-        
+
         {/* Mobile Menu */}
         <AnimatePresence>
           {isOpen && (
@@ -156,7 +159,7 @@ export function Header() {
                   <span>Inicio</span>
                   <span className="opacity-50 text-primary">→</span>
                 </button>
-                
+
                 <button 
                   onClick={() => {
                     setIsOpen(false);
@@ -170,9 +173,9 @@ export function Header() {
                   <span>Servicios</span>
                   <span className="opacity-50 text-primary">→</span>
                 </button>
-                
+
                 <button 
-                  onClick={() => {
+                  onClick={()={() => {
                     setIsOpen(false);
                     setTimeout(() => {
                       const element = document.getElementById('projects');
@@ -184,7 +187,7 @@ export function Header() {
                   <span>Proyectos</span>
                   <span className="opacity-50 text-primary">→</span>
                 </button>
-                
+
                 <button 
                   onClick={() => {
                     setIsOpen(false);
@@ -198,7 +201,7 @@ export function Header() {
                   <span>Experiencia</span>
                   <span className="opacity-50 text-primary">→</span>
                 </button>
-                
+
                 <button 
                   onClick={() => {
                     setIsOpen(false);
