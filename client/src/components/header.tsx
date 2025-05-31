@@ -127,16 +127,10 @@ export function Header() {
                 console.log("Admin button clicked");
                 setShowAuthModal(true);
               }}
-              className={`relative font-medium hover:text-white transition-colors nav-link ${
-                showAdminPanel ? "text-white after:w-full" : "text-gray-200"
-              }`}
+              className="relative font-medium hover:text-white transition-colors nav-link text-gray-200"
             >
               Admin
-              <span 
-                className={`absolute left-0 bottom-[-2px] h-[2px] bg-gradient-to-r from-primary to-accent transition-all duration-300 ${
-                  showAdminPanel ? "w-full" : "w-0"
-                }`}
-              />
+              <span className="absolute left-0 bottom-[-2px] h-[2px] bg-gradient-to-r from-primary to-accent transition-all duration-300 w-0 hover:w-full"></span>
             </button>
 
           </div>
@@ -248,10 +242,10 @@ export function Header() {
                 <button 
                   onClick={() => {
                     console.log("Mobile Admin button clicked");
+                    setShowAuthModal(true);
                     setIsOpen(false);
-                    setTimeout(() => setShowAuthModal(true), 100);
                   }}
-                  className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
+                  className="block px-3 py-2 text-base font-medium rounded-md transition-colors text-gray-300 hover:text-white hover:bg-gray-700"
                 >
                   <span>Admin</span>
                   <span className="opacity-50 text-primary">→</span>
