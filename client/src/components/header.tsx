@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Shield } from "lucide-react";
+import { AuthModal } from "@/components/admin/auth-modal";
+import { AdminPanel } from "@/components/admin/admin-panel";
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
@@ -120,9 +122,19 @@ export function Header() {
             <NavLink active={activeSection === "cursos"} onClick={() => scrollToSection("cursos")}>
               Cursos Linea
             </NavLink>
-            <NavLink active={activeSection === "admin"} onClick={() => scrollToSection("admin")}>
+            <button
+              onClick={() => setShowAuthModal(true)}
+              className={`relative font-medium hover:text-white transition-colors nav-link ${
+                showAdminPanel ? "text-white after:w-full" : "text-gray-200"
+              }`}
+            >
               Admin
-            </NavLink>
+              <span 
+                className={`absolute left-0 bottom-[-2px] h-[2px] bg-gradient-to-r from-primary to-accent transition-all duration-300 ${
+                  showAdminPanel ? "w-full" : "w-0"
+                }`}
+              />
+            </button>
 
           </div>
 
@@ -215,11 +227,52 @@ export function Header() {
                   <span>Contacto</span>
                   <span className="opacity-50 text-primary">→</span>
                 </button>
+
+                <button 
+                  onClick={() => {
+                    setIsOpen(false);
+                    setTimeout(() => {
+                      const element = document.getElementById('cursos');
+                      if (element) element.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                  }}
+                  className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
+                >
+                  <span>Cursos Linea</span>
+                  <span className="opacity-50 text-primary">→</span>
+                </button>
+
+                <button 
+                  onClick={() => {
+                    setIsOpen(false);
+                    setShowAuthModal(true);
+                  }}
+                  className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
+                >
+                  <span>Admin</span>
+                  <span className="opacity-50 text-primary">→</span>
+                </button>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
+
+      {/* Auth Modal */}
+      <AuthModal 
+        isOpen={showAuthModal} 
+        onClose={() => setShowAuthModal(false)}
+        onSuccess={() => {
+          setIsAuthenticated(true);
+          setShowAuthModal(false);
+          setShowAdminPanel(true);
+        }}
+      />
+
+      {/* Admin Panel */}
+      {showAdminPanel && (
+        <AdminPanel onClose={() => setShowAdminPanel(false)} />
+      )}
     </header>
   );
 }
