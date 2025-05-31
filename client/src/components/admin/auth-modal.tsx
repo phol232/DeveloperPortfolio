@@ -29,11 +29,23 @@ export function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
     e.preventDefault();
     setIsLoading(true);
     
+    // Credenciales simuladas para demo
+    const validCredentials = {
+      email: "admin@demo.com",
+      password: "admin123"
+    };
+    
     // Simulate API call
     setTimeout(() => {
       setIsLoading(false);
-      onSuccess();
-      onClose();
+      
+      if (loginData.email === validCredentials.email && 
+          loginData.password === validCredentials.password) {
+        onSuccess();
+        onClose();
+      } else {
+        alert("Credenciales incorrectas. Use:\nEmail: admin@demo.com\nContraseña: admin123");
+      }
     }, 1000);
   };
 
@@ -79,6 +91,10 @@ export function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
                   </CardTitle>
                   <CardDescription>
                     Ingresa tus credenciales para acceder al panel administrativo
+                    <br />
+                    <span className="text-xs text-blue-600 font-medium">
+                      Demo: admin@demo.com / admin123
+                    </span>
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -90,7 +106,7 @@ export function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
                         <Input
                           id="email"
                           type="email"
-                          placeholder="admin@ejemplo.com"
+                          placeholder="admin@demo.com"
                           className="pl-10"
                           value={loginData.email}
                           onChange={(e) => setLoginData({...loginData, email: e.target.value})}
