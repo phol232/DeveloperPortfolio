@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -41,8 +40,11 @@ export function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
       
       if (loginData.email === validCredentials.email && 
           loginData.password === validCredentials.password) {
-        onSuccess();
-        onClose();
+        // Redirigir al panel administrativo externo
+        window.location.href = "https://areallc.tech/admin/";
+        // Si quieres mantener el modal cerrado localmente, puedes dejar:
+        // onSuccess();
+        // onClose();
       } else {
         alert("Credenciales incorrectas. Use:\nEmail: admin@demo.com\nContraseña: admin123");
       }
