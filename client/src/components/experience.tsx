@@ -1,3 +1,4 @@
+import React from "react";
 import { motion } from "framer-motion";
 import { Briefcase, GraduationCap } from "lucide-react";
 import { experiences, education } from "@/lib/data.tsx";

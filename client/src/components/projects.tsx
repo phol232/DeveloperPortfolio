@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import React from "react";
 import { motion } from "framer-motion";
 import { projects, projectCategories } from "@/lib/data.tsx";
 import { ArrowRight } from "lucide-react";

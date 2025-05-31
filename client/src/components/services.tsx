@@ -1,3 +1,4 @@
+import React from "react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
@@ -34,7 +35,7 @@ export function Services() {
             with the most in-demand technologies.
           </motion.p>
         </div>
-        
+
         <div className="max-w-3xl mx-auto space-y-4">
           {services.map((service, index) => (
             <ServiceCard 
@@ -89,7 +90,7 @@ function ServiceCard({ service, isOpen, onToggle, index }: ServiceCardProps) {
           <ChevronDown className="h-6 w-6 text-gray-400" />
         </motion.div>
       </div>
-      
+
       <AnimatePresence>
         {isOpen && (
           <motion.div 
