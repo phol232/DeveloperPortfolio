@@ -123,7 +123,10 @@ export function Header() {
               Cursos Linea
             </NavLink>
             <button
-              onClick={() => setShowAuthModal(true)}
+              onClick={() => {
+                console.log("Admin button clicked");
+                setShowAuthModal(true);
+              }}
               className={`relative font-medium hover:text-white transition-colors nav-link ${
                 showAdminPanel ? "text-white after:w-full" : "text-gray-200"
               }`}
@@ -244,8 +247,9 @@ export function Header() {
 
                 <button 
                   onClick={() => {
+                    console.log("Mobile Admin button clicked");
                     setIsOpen(false);
-                    setShowAuthModal(true);
+                    setTimeout(() => setShowAuthModal(true), 100);
                   }}
                   className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
                 >
