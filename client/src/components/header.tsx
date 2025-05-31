@@ -244,16 +244,16 @@ export function Header() {
                     <span className="opacity-50 text-primary">→</span>
                   </button>
 
-                  <button
+                  <button 
                     onClick={() => {
                       console.log("Mobile Admin button clicked");
-                      window.location.href = "/admin";
+                      setShowAuthModal(true);
                       setIsOpen(false);
                     }}
-                    className="relative font-medium hover:text-white transition-colors nav-link text-gray-200"
+                    className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
                   >
-                    Admin
-                    <span className="absolute left-0 bottom-[-2px] h-[2px] bg-gradient-to-r from-primary to-accent transition-all duration-300 w-0 hover:w-full"></span>
+                    <span>Admin</span>
+                    <span className="opacity-50 text-primary">→</span>
                   </button>
                 </div>
               </motion.div>
@@ -261,6 +261,17 @@ export function Header() {
           </AnimatePresence>
         </div>
       </header>
+
+      {/* Auth Modal */}
+      <AuthModal 
+        isOpen={showAuthModal} 
+        onClose={() => setShowAuthModal(false)}
+        onSuccess={() => {
+          setIsAuthenticated(true);
+          setShowAuthModal(false);
+          setShowAdminPanel(true);
+        }}
+      />
     </>
   );
 }
