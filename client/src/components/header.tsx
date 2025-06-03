@@ -103,12 +103,32 @@ export function Header() {
     );
   }
 
+  // Check if we're on the courses page
+  const isCoursesPage = window.location.pathname === '/cursos';
+
+  const handleNavigation = (target: string) => {
+    if (isCoursesPage && target.startsWith('#')) {
+      // If we're on courses page and clicking a home section, go to home first
+      window.location.href = `/${target}`;
+    } else if (target.startsWith('#')) {
+      // Smooth scroll to section on same page
+      const element = document.querySelector(target);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else {
+      // Navigate to different page
+      window.location.href = target;
+    }
+    setIsOpen(false);
+  };
+
   return (
       <>
         <header className="fixed top-0 left-0 right-0 bg-background/80 backdrop-blur-md z-50">
           <div className="container mx-auto px-6 py-5">
             <nav className="flex items-center justify-between">
-              <div className="flex items-center">
+              <div className="flex items-center cursor-pointer" onClick={() => handleNavigation('/')}>
                 <div className="text-xl font-bold text-white flex items-center">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
                     <span className="text-white font-bold text-lg">D</span>
@@ -118,24 +138,84 @@ export function Header() {
               </div>
 
               <div className="hidden md:flex space-x-8">
-                <NavLink active={activeSection === "home"} onClick={() => scrollToSection("home")}>
+                <button
+                    onClick={() => handleNavigation(isCoursesPage ? '/#home' : '#home')}
+                    className={`relative font-medium hover:text-white transition-colors nav-link ${
+                        activeSection === "home" ? "text-white after:w-full" : "text-gray-200"
+                    }`}
+                >
                   Inicio
-                </NavLink>
-                <NavLink active={activeSection === "services"} onClick={() => scrollToSection("services")}>
+                  <span
+                      className={`absolute left-0 bottom-[-2px] h-[2px] bg-gradient-to-r from-primary to-accent transition-all duration-300 ${
+                          activeSection === "home" ? "w-full" : "w-0"
+                      }`}
+                  />
+                </button>
+                <button
+                    onClick={() => handleNavigation(isCoursesPage ? '/#services' : '#services')}
+                    className={`relative font-medium hover:text-white transition-colors nav-link ${
+                        activeSection === "services" ? "text-white after:w-full" : "text-gray-200"
+                    }`}
+                >
                   Servicios
-                </NavLink>
-                <NavLink active={activeSection === "projects"} onClick={() => scrollToSection("projects")}>
+                  <span
+                      className={`absolute left-0 bottom-[-2px] h-[2px] bg-gradient-to-r from-primary to-accent transition-all duration-300 ${
+                          activeSection === "services" ? "w-full" : "w-0"
+                      }`}
+                  />
+                </button>
+                <button
+                    onClick={() => handleNavigation(isCoursesPage ? '/#projects' : '#projects')}
+                    className={`relative font-medium hover:text-white transition-colors nav-link ${
+                        activeSection === "projects" ? "text-white after:w-full" : "text-gray-200"
+                    }`}
+                >
                   Proyectos
-                </NavLink>
-                <NavLink active={activeSection === "experience"} onClick={() => scrollToSection("experience")}>
+                  <span
+                      className={`absolute left-0 bottom-[-2px] h-[2px] bg-gradient-to-r from-primary to-accent transition-all duration-300 ${
+                          activeSection === "projects" ? "w-full" : "w-0"
+                      }`}
+                  />
+                </button>
+                <button
+                    onClick={() => handleNavigation(isCoursesPage ? '/#experience' : '#experience')}
+                    className={`relative font-medium hover:text-white transition-colors nav-link ${
+                        activeSection === "experience" ? "text-white after:w-full" : "text-gray-200"
+                    }`}
+                >
                   Experiencia
-                </NavLink>
-                <NavLink active={activeSection === "contact"} onClick={() => scrollToSection("contact")}>
+                  <span
+                      className={`absolute left-0 bottom-[-2px] h-[2px] bg-gradient-to-r from-primary to-accent transition-all duration-300 ${
+                          activeSection === "experience" ? "w-full" : "w-0"
+                      }`}
+                  />
+                </button>
+                <button
+                    onClick={() => handleNavigation(isCoursesPage ? '/#contact' : '#contact')}
+                    className={`relative font-medium hover:text-white transition-colors nav-link ${
+                        activeSection === "contact" ? "text-white after:w-full" : "text-gray-200"
+                    }`}
+                >
                   Contacto
-                </NavLink>
-                <NavLink active={false} onClick={() => window.location.href = "/cursos"}>
+                  <span
+                      className={`absolute left-0 bottom-[-2px] h-[2px] bg-gradient-to-r from-primary to-accent transition-all duration-300 ${
+                          activeSection === "contact" ? "w-full" : "w-0"
+                      }`}
+                  />
+                </button>
+                <button
+                    onClick={() => handleNavigation('/cursos')}
+                    className={`relative font-medium hover:text-white transition-colors nav-link ${
+                        false ? "text-white after:w-full" : "text-gray-200"
+                    }`}
+                >
                   Cursos Línea
-                </NavLink>
+                  <span
+                      className={`absolute left-0 bottom-[-2px] h-[2px] bg-gradient-to-r from-primary to-accent transition-all duration-300 ${
+                          false ? "w-full" : "w-0"
+                      }`}
+                  />
+                </button>
                 <button
                     onClick={() => {
                       console.log("Admin button clicked");
@@ -169,13 +249,7 @@ export function Header() {
                   >
                     <div className="flex flex-col space-y-4 py-3 max-w-md mx-auto">
                       <button
-                          onClick={() => {
-                            setIsOpen(false);
-                            setTimeout(() => {
-                              const element = document.getElementById('home');
-                              if (element) element.scrollIntoView({ behavior: 'smooth' });
-                            }, 100);
-                          }}
+                          onClick={() => handleNavigation(isCoursesPage ? '/#home' : '#home')}
                           className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
                       >
                         <span>Inicio</span>
@@ -183,13 +257,7 @@ export function Header() {
                       </button>
 
                       <button
-                          onClick={() => {
-                            setIsOpen(false);
-                            setTimeout(() => {
-                              const element = document.getElementById('services');
-                              if (element) element.scrollIntoView({ behavior: 'smooth' });
-                            }, 100);
-                          }}
+                          onClick={() => handleNavigation(isCoursesPage ? '/#services' : '#services')}
                           className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
                       >
                         <span>Servicios</span>
@@ -197,13 +265,7 @@ export function Header() {
                       </button>
 
                       <button
-                          onClick={() => {
-                            setIsOpen(false);
-                            setTimeout(() => {
-                              const element = document.getElementById('projects');
-                              if (element) element.scrollIntoView({ behavior: 'smooth' });
-                            }, 100);
-                          }}
+                          onClick={() => handleNavigation(isCoursesPage ? '/#projects' : '#projects')}
                           className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
                       >
                         <span>Proyectos</span>
@@ -211,13 +273,7 @@ export function Header() {
                       </button>
 
                       <button
-                          onClick={() => {
-                            setIsOpen(false);
-                            setTimeout(() => {
-                              const element = document.getElementById('experience');
-                              if (element) element.scrollIntoView({ behavior: 'smooth' });
-                            }, 100);
-                          }}
+                          onClick={() => handleNavigation(isCoursesPage ? '/#experience' : '#experience')}
                           className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
                       >
                         <span>Experiencia</span>
@@ -225,13 +281,7 @@ export function Header() {
                       </button>
 
                       <button
-                          onClick={() => {
-                            setIsOpen(false);
-                            setTimeout(() => {
-                              const element = document.getElementById('contact');
-                              if (element) element.scrollIntoView({ behavior: 'smooth' });
-                            }, 100);
-                          }}
+                          onClick={() => handleNavigation(isCoursesPage ? '/#contact' : '#contact')}
                           className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
                       >
                         <span>Contacto</span>
@@ -239,10 +289,7 @@ export function Header() {
                       </button>
 
                       <button
-                          onClick={() => {
-                            setIsOpen(false);
-                            window.location.href = "/cursos";
-                          }}
+                          onClick={() => handleNavigation('/cursos')}
                           className="font-medium text-gray-200 hover:text-white py-3 px-4 text-left w-full rounded-md hover:bg-primary/10 border border-primary/10 flex items-center justify-between"
                       >
                         <span>Cursos Línea</span>
