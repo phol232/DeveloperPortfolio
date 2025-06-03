@@ -118,6 +118,7 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
     // Validación de campos requeridos
     if (!newCourse.nombre || !newCourse.instructor || !newCourse.categoria || !newCourse.precio) {
       setError("Por favor, completa todos los campos obligatorios.");
+      console.log("Validación fallida: faltan campos obligatorios");
       return;
     }
 
@@ -134,7 +135,11 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
         user_id: userData.user_id
       };
 
+      console.log("Enviando datos al backend:", courseData);
+
       const response = await apiService.createCourse(courseData);
+
+      console.log("Respuesta del backend:", response);
 
       if (response.success) {
         await loadCourses(); // Recargar la lista
@@ -151,10 +156,11 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
         setTimeout(() => setSuccessMsg(""), 2000);
       } else {
         setError(response.message || "Error al crear el curso");
+        console.log("Error al crear el curso:", response.message);
       }
     } catch (error) {
       setError("Error de conexión al crear el curso");
-      console.error("Error creating course:", error);
+      console.error("Error creando curso:", error);
     } finally {
       setLoading(false);
     }
