@@ -31,6 +31,12 @@ import {
 } from "@/components/ui/dialog";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
+interface ApiResponse {
+  success: boolean;
+  message?: string;
+  data?: any;
+}
+
 interface AdminPanelProps {
   onClose: () => void;
   onLogout: () => void;
@@ -83,20 +89,25 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
 
   const handleAddCourse = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Adding course...", newCourse);
+    console.log("=== INICIANDO PROCESO DE AGREGAR CURSO ===");
+    console.log("Datos del curso:", newCourse);
+    console.log("Datos del usuario:", userData);
 
     if (!userData) {
+      console.log("ERROR: Usuario no autenticado");
       setError("Usuario no autenticado");
       return;
     }
 
     if (!newCourse.nombre || !newCourse.instructor || !newCourse.categoria || !newCourse.precio) {
+      console.log("ERROR: Campos obligatorios faltantes");
       setError("Por favor, completa todos los campos obligatorios.");
       return;
     }
 
     setLoading(true);
     setError("");
+
     try {
       const courseData = {
         nombre: newCourse.nombre,
@@ -108,11 +119,19 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
         user_id: userData.user_id
       };
 
-      console.log("Sending course data:", courseData);
-      const response = await apiService.createCourse(courseData);
-      console.log("Create course response:", response);
+      console.log("=== ENVIANDO DATOS AL SERVIDOR ===");
+      console.log("Course data a enviar:", JSON.stringify(courseData, null, 2));
 
-      if (response.success) {
+      const response = await apiService.createCourse(courseData);
+
+      console.log("=== RESPUESTA RECIBIDA DEL SERVIDOR ===");
+      console.log("Response completa:", JSON.stringify(response, null, 2));
+      console.log("Response.success:", response?.success);
+      console.log("Response.message:", response?.message);
+      console.log("Response.data:", 'data' in response ? response.data : 'No hay datos disponibles');
+
+      if (response && response.success) {
+        console.log("=== CURSO CREADO EXITOSAMENTE ===");
         await loadCourses();
         setNewCourse({
           nombre: "",
@@ -126,13 +145,20 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
         setSuccessMsg("¡Curso agregado exitosamente!");
         setTimeout(() => setSuccessMsg(""), 3000);
       } else {
-        setError(response.message || "Error al crear el curso");
+        console.log("=== ERROR EN RESPUESTA DEL SERVIDOR ===");
+        const errorMsg = response?.message || "Error al crear el curso - respuesta no exitosa";
+        console.log("Error message:", errorMsg);
+        setError(errorMsg);
       }
-    } catch (error) {
-      setError("Error de conexión al crear el curso");
-      console.error("Error creando curso:", error);
+    } catch (error: any) {
+      console.log("=== ERROR DE CONEXIÓN O EXCEPCIÓN ===");
+      console.error("Error completo:", error);
+      console.error("Error message:", error?.message);
+      console.error("Error stack:", error?.stack);
+      setError(`Error de conexión: ${error?.message || 'Error desconocido'}`);
     } finally {
       setLoading(false);
+      console.log("=== PROCESO DE AGREGAR CURSO FINALIZADO ===");
     }
   };
 
@@ -152,20 +178,25 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
 
   const handleUpdateCourse = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Updating course...", selectedCourse, newCourse);
+    console.log("=== INICIANDO PROCESO DE ACTUALIZAR CURSO ===");
+    console.log("Curso seleccionado:", selectedCourse);
+    console.log("Nuevos datos:", newCourse);
 
     if (!selectedCourse || !userData) {
+      console.log("ERROR: Datos incompletos para actualizar");
       setError("Datos incompletos para actualizar");
       return;
     }
 
     if (!newCourse.nombre || !newCourse.instructor || !newCourse.categoria || !newCourse.precio) {
+      console.log("ERROR: Campos obligatorios faltantes");
       setError("Por favor, completa todos los campos obligatorios.");
       return;
     }
 
     setLoading(true);
     setError("");
+
     try {
       const courseData = {
         nombre: newCourse.nombre,
@@ -178,11 +209,16 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
         user_id: userData.user_id
       };
 
-      console.log("Updating course with data:", courseData);
-      const response = await apiService.updateCourse(courseData);
-      console.log("Update course response:", response);
+      console.log("=== ENVIANDO ACTUALIZACIÓN AL SERVIDOR ===");
+      console.log("Update data:", JSON.stringify(courseData, null, 2));
 
-      if (response.success) {
+      const response = await apiService.updateCourse(courseData);
+
+      console.log("=== RESPUESTA DE ACTUALIZACIÓN ===");
+      console.log("Update response:", JSON.stringify(response, null, 2));
+
+      if (response && response.success) {
+        console.log("=== CURSO ACTUALIZADO EXITOSAMENTE ===");
         await loadCourses();
         setSelectedCourse(null);
         setNewCourse({
@@ -197,13 +233,17 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
         setSuccessMsg("¡Curso actualizado exitosamente!");
         setTimeout(() => setSuccessMsg(""), 3000);
       } else {
-        setError(response.message || "Error al actualizar el curso");
+        console.log("=== ERROR EN ACTUALIZACIÓN ===");
+        const errorMsg = response?.message || "Error al actualizar el curso";
+        setError(errorMsg);
       }
-    } catch (error) {
-      setError("Error de conexión al actualizar el curso");
+    } catch (error: any) {
+      console.log("=== ERROR DE CONEXIÓN EN ACTUALIZACIÓN ===");
       console.error("Error updating course:", error);
+      setError(`Error de conexión: ${error?.message || 'Error desconocido'}`);
     } finally {
       setLoading(false);
+      console.log("=== PROCESO DE ACTUALIZACIÓN FINALIZADO ===");
     }
   };
 

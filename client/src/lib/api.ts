@@ -24,7 +24,7 @@ export interface Course {
   updated_at?: string;
   creador_email?: string;
   creador?: string;
-  image?: string; 
+  image?: string;
 }
 
 export interface ApiResponse {
@@ -51,7 +51,7 @@ class ApiService {
       console.log('API Request:', url, config); // Log request details
       const response = await fetch(url, config);
       const data = await response.json();
-      
+
       console.log('API Response:', data); // Log the response
 
       if (!response.ok) {
@@ -88,7 +88,7 @@ class ApiService {
     if (!course.nombre || !course.instructor || !course.categoria || !course.precio) {
       throw new Error('Todos los campos son necesarios');
     }
-    
+
     // Make sure user_id is included - crucial for your PHP backend
     if (!course.user_id) {
       // Get user_id from localStorage if available
@@ -100,17 +100,46 @@ class ApiService {
         throw new Error('Usuario no autenticado');
       }
     }
-    
+
     // Set default values for optional fields
     course.estudiantes = course.estudiantes || 0;
     course.estado = course.estado || 'Draft';
-    
+
     console.log('Creating course with data:', course);
-    
-    return this.request<ApiResponse>('/cursos/crear.php', {
-      method: 'POST',
-      body: JSON.stringify(course),
-    });
+
+    console.log("=== API createCourse INICIADO ===");
+    console.log("URL:", `${API_BASE_URL}/cursos/crear.php`);
+    console.log("Data a enviar:", JSON.stringify(course, null, 2));
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/cursos/crear.php`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(course),
+      });
+
+      console.log("Response status:", response.status);
+      console.log("Response ok:", response.ok);
+      console.log("Response headers:", response.headers);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.log("Error response text:", errorText);
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+      }
+
+      const jsonResponse = await response.json();
+      console.log("Response JSON:", JSON.stringify(jsonResponse, null, 2));
+      return jsonResponse;
+    } catch (error) {
+      console.error('=== ERROR EN API createCourse ===');
+      console.error('Error creating course:', error);
+      console.error('Error type:', typeof error);
+      console.error('Error message:', error instanceof Error ? error.message : String(error));
+      throw error;
+    }
   }
 
   async updateCourse(course: Course): Promise<ApiResponse> {
@@ -118,10 +147,36 @@ class ApiService {
     if (!course.id) {
       throw new Error('Course ID is required for updates');
     }
-    return this.request<ApiResponse>('/cursos/editar.php', {
-      method: 'POST',
-      body: JSON.stringify(course),
-    });
+    console.log("=== API updateCourse INICIADO ===");
+    console.log("URL:", `${API_BASE_URL}/cursos/editar.php`);
+    console.log("Data a enviar:", JSON.stringify(course, null, 2));
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/cursos/editar.php`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(course),
+      });
+
+      console.log("Update response status:", response.status);
+      console.log("Update response ok:", response.ok);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.log("Update error response text:", errorText);
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+      }
+
+      const jsonResponse = await response.json();
+      console.log("Update response JSON:", JSON.stringify(jsonResponse, null, 2));
+      return jsonResponse;
+    } catch (error) {
+      console.error('=== ERROR EN API updateCourse ===');
+      console.error('Error updating course:', error);
+      throw error;
+    }
   }
 
   async deleteCourse(id: number): Promise<ApiResponse> {
@@ -131,7 +186,7 @@ class ApiService {
       body: JSON.stringify({ id }),
     });
   }
-  
+
   // You might want to add a method to get a single course by ID if needed
   async getCourseById(id: number): Promise<Course> {
     return this.request<Course>(`/cursos/obtener.php?id=${id}`);
