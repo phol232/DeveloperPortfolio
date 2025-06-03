@@ -7,19 +7,21 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Lock, User, Mail, Eye, EyeOff } from "lucide-react";
+import { apiService } from "@/lib/api";
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: (userData: { user_id: number; nombre: string }) => void;
 }
 
 export function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [registerData, setRegisterData] = useState({ 
-    name: "", 
+    nombre: "", 
     email: "", 
     password: "", 
     confirmPassword: "" 
@@ -28,42 +30,76 @@ export function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError("");
     
-    // Credenciales simuladas para demo
-    const validCredentials = {
-      email: "admin@demo.com",
-      password: "admin123"
-    };
-    
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const response = await apiService.login(loginData);
       
-      if (loginData.email === validCredentials.email && 
-          loginData.password === validCredentials.password) {
-        onSuccess();
+      if (response.success && response.user_id && response.nombre) {
+        // Guardar datos del usuario en localStorage
+        localStorage.setItem('user', JSON.stringify({
+          user_id: response.user_id,
+          nombre: response.nombre,
+          email: loginData.email
+        }));
+        
+        onSuccess({ user_id: response.user_id, nombre: response.nombre });
         onClose();
       } else {
-        alert("Credenciales incorrectas. Use:\nEmail: admin@demo.com\nContraseña: admin123");
+        setError(response.message || "Credenciales incorrectas");
       }
-    }, 1000);
+    } catch (error) {
+      setError("Error de conexión. Verifique su conexión a internet.");
+      console.error("Login error:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+    
     if (registerData.password !== registerData.confirmPassword) {
-      alert("Las contraseñas no coinciden");
+      setError("Las contraseñas no coinciden");
       return;
     }
     
     setIsLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      const response = await apiService.register({
+        email: registerData.email,
+        password: registerData.password,
+        nombre: registerData.nombre
+      });
+      
+      if (response.success) {
+        // Después del registro exitoso, hacer login automático
+        const loginResponse = await apiService.login({
+          email: registerData.email,
+          password: registerData.password
+        });
+        
+        if (loginResponse.success && loginResponse.user_id && loginResponse.nombre) {
+          localStorage.setItem('user', JSON.stringify({
+            user_id: loginResponse.user_id,
+            nombre: loginResponse.nombre,
+            email: registerData.email
+          }));
+          
+          onSuccess({ user_id: loginResponse.user_id, nombre: loginResponse.nombre });
+          onClose();
+        }
+      } else {
+        setError(response.message || "Error al crear la cuenta");
+      }
+    } catch (error) {
+      setError("Error de conexión. Verifique su conexión a internet.");
+      console.error("Register error:", error);
+    } finally {
       setIsLoading(false);
-      onSuccess();
-      onClose();
-    }, 1000);
+    }
   };
 
   return (
@@ -91,11 +127,12 @@ export function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
                   </CardTitle>
                   <CardDescription>
                     Ingresa tus credenciales para acceder al panel administrativo
-                    <br />
-                    <span className="text-xs text-blue-600 font-medium">
-                      Demo: admin@demo.com / admin123
-                    </span>
                   </CardDescription>
+                  {error && (
+                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                      {error}
+                    </div>
+                  )}
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleLogin} className="space-y-4">
@@ -106,7 +143,7 @@ export function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
                         <Input
                           id="email"
                           type="email"
-                          placeholder="admin@demo.com"
+                          placeholder="tu@email.com"
                           className="pl-10"
                           value={loginData.email}
                           onChange={(e) => setLoginData({...loginData, email: e.target.value})}
@@ -166,6 +203,11 @@ export function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
                   <CardDescription>
                     Crea una nueva cuenta de administrador
                   </CardDescription>
+                  {error && (
+                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                      {error}
+                    </div>
+                  )}
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleRegister} className="space-y-4">
@@ -177,8 +219,8 @@ export function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
                           id="name"
                           placeholder="Tu nombre completo"
                           className="pl-10"
-                          value={registerData.name}
-                          onChange={(e) => setRegisterData({...registerData, name: e.target.value})}
+                          value={registerData.nombre}
+                          onChange={(e) => setRegisterData({...registerData, nombre: e.target.value})}
                           required
                         />
                       </div>
