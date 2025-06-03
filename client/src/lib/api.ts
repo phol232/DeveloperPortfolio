@@ -19,7 +19,7 @@ export interface Course {
   precio: number;
   estudiantes?: number;
   estado?: string;
-  user_id: number;
+  user_id?: number; // Optional now since backend doesn't require it
   created_at?: string;
   updated_at?: string;
   creador_email?: string;
@@ -93,24 +93,6 @@ class ApiService {
       throw new Error('Todos los campos son necesarios');
     }
 
-    // Verificar que el usuario esté autenticado con token
-    const token = localStorage.getItem('auth_token');
-    if (!token) {
-      throw new Error('Usuario no autenticado - token no encontrado');
-    }
-
-    // Make sure user_id is included - crucial for your PHP backend
-    if (!course.user_id) {
-      // Get user_id from localStorage if available
-      const userData = localStorage.getItem('user');
-      if (userData) {
-        const user = JSON.parse(userData);
-        course.user_id = user.user_id;
-      } else {
-        throw new Error('Usuario no autenticado - datos de usuario no encontrados');
-      }
-    }
-
     // Set default values for optional fields
     course.estudiantes = course.estudiantes || 0;
     course.estado = course.estado || 'Draft';
@@ -119,7 +101,6 @@ class ApiService {
 
     console.log("=== API createCourse INICIADO ===");
     console.log("URL:", `${API_BASE_URL}/cursos/crear.php`);
-    console.log("Token being sent:", token);
     console.log("Data a enviar:", JSON.stringify(course, null, 2));
 
     try {
@@ -127,14 +108,12 @@ class ApiService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(course),
       });
 
       console.log("Response status:", response.status);
       console.log("Response ok:", response.ok);
-      console.log("Response headers:", response.headers);
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -148,31 +127,18 @@ class ApiService {
     } catch (error) {
       console.error('=== ERROR EN API createCourse ===');
       console.error('Error creating course:', error);
-      console.error('Error type:', typeof error);
-      // Evita acceder directamente a error.message si error es {}
-      if (error && typeof error === "object" && "message" in error) {
-        console.error('Error message:', (error as any).message);
-      } else {
-        console.error('Error message:', String(error));
-      }
       throw error;
     }
   }
 
   async updateCourse(course: Course): Promise<ApiResponse> {
-    // Verificar que el usuario esté autenticado con token
-    const token = localStorage.getItem('auth_token');
-    if (!token) {
-      throw new Error('Usuario no autenticado - token no encontrado');
-    }
-
     // Ensure course includes id for the PHP backend to identify which course to update
     if (!course.id) {
       throw new Error('Course ID is required for updates');
     }
+
     console.log("=== API updateCourse INICIADO ===");
     console.log("URL:", `${API_BASE_URL}/cursos/editar.php`);
-    console.log("Token being sent:", token);
     console.log("Data a enviar:", JSON.stringify(course, null, 2));
 
     try {
@@ -180,7 +146,6 @@ class ApiService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(course),
       });
@@ -200,12 +165,6 @@ class ApiService {
     } catch (error) {
       console.error('=== ERROR EN API updateCourse ===');
       console.error('Error updating course:', error);
-      // Evita acceder directamente a error.message si error es {}
-      if (error && typeof error === "object" && "message" in error) {
-        console.error('Error message:', (error as any).message);
-      } else {
-        console.error('Error message:', String(error));
-      }
       throw error;
     }
   }
