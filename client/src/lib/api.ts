@@ -28,12 +28,11 @@ export interface Course {
 }
 
 export interface ApiResponse {
-  token: any;
   success: boolean;
   message?: string;
   user_id?: number;
   nombre?: string;
-  error?: string;
+  error?: string; // Add error field for better error handling
 }
 
 class ApiService {
@@ -46,18 +45,18 @@ class ApiService {
     const config: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
-        ...(token && { 'Authorization': `Bearer ${token}` }),
+        ...(token && { 'Authorization': `Bearer ${token}` }), // Agregar token si existe
         ...options.headers,
       },
       ...options,
     };
 
     try {
-      console.log('API Request:', url, config);
+      console.log('API Request:', url, config); // Log request details
       const response = await fetch(url, config);
       const data = await response.json();
 
-      console.log('API Response:', data);
+      console.log('API Response:', data); // Log the response
 
       if (!response.ok) {
         throw new Error(data.message || `HTTP error! status: ${response.status}`);
@@ -66,7 +65,6 @@ class ApiService {
       return data;
     } catch (error) {
       console.error('API request failed:', error);
-      console.error('Error message:', error instanceof Error ? error.message : 'Error desconocido');
       throw error;
     }
   }
@@ -90,15 +88,18 @@ class ApiService {
   }
 
   async createCourse(course: Course): Promise<ApiResponse> {
+    // Validate required fields
     if (!course.nombre || !course.instructor || !course.categoria || !course.precio) {
       throw new Error('Todos los campos son necesarios');
     }
 
+    // Verificar que el usuario esté autenticado con token
     const token = localStorage.getItem('auth_token');
     if (!token) {
       throw new Error('Usuario no autenticado - token no encontrado');
     }
 
+    // Make sure user_id is included - crucial for your PHP backend
     if (!course.user_id) {
       // Get user_id from localStorage if available
       const userData = localStorage.getItem('user');
@@ -125,6 +126,7 @@ class ApiService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(course),
       });
@@ -146,7 +148,6 @@ class ApiService {
       console.error('=== ERROR EN API createCourse ===');
       console.error('Error creating course:', error);
       console.error('Error type:', typeof error);
-      console.error('Error message:', error instanceof Error ? error.message : 'Error desconocido');
       throw error;
     }
   }
@@ -158,6 +159,7 @@ class ApiService {
       throw new Error('Usuario no autenticado - token no encontrado');
     }
 
+    // Ensure course includes id for the PHP backend to identify which course to update
     if (!course.id) {
       throw new Error('Course ID is required for updates');
     }
@@ -170,6 +172,7 @@ class ApiService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(course),
       });
@@ -189,18 +192,19 @@ class ApiService {
     } catch (error) {
       console.error('=== ERROR EN API updateCourse ===');
       console.error('Error updating course:', error);
-      console.error('Error message:', error instanceof Error ? error.message : 'Error desconocido');
       throw error;
     }
   }
 
   async deleteCourse(id: number): Promise<ApiResponse> {
+    // Your PHP endpoint expects an id in the request body
     return this.request<ApiResponse>('/cursos/eliminar.php', {
       method: 'POST',
       body: JSON.stringify({ id }),
     });
   }
 
+  // You might want to add a method to get a single course by ID if needed
   async getCourseById(id: number): Promise<Course> {
     return this.request<Course>(`/cursos/obtener.php?id=${id}`);
   }
