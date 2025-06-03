@@ -33,6 +33,8 @@ export interface ApiResponse {
   user_id?: number;
   nombre?: string;
   error?: string; // Add error field for better error handling
+  data?: any; // Añadir propiedad data para respuestas del API
+  token?: string; // Token para autenticación
 }
 
 class ApiService {

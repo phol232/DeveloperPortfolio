@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { BookOpen, Users, DollarSign, Search, Filter } from "lucide-react";
+import { BookOpen, Users, DollarSign, Search, Filter, RefreshCw } from "lucide-react";
 import { apiService, Course } from "@/lib/api";
 import { motion } from "framer-motion";
 
@@ -17,25 +17,54 @@ export default function Courses() {
     const [error, setError] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedCategory, setSelectedCategory] = useState<string>("all");
+    const [lastUpdate, setLastUpdate] = useState<number>(Date.now());
 
-    useEffect(() => {
-        loadCourses();
-    }, []);
-
-    const loadCourses = async () => {
+    // Cargar cursos con useCallback para poder referenciar desde otros efectos
+    const loadCourses = useCallback(async () => {
         setLoading(true);
         try {
             const coursesData = await apiService.getCourses();
             // Only show active courses to public
             const activeCourses = coursesData.filter(course => course.estado === "Active");
             setCourses(activeCourses);
+            setLastUpdate(Date.now());
         } catch (error) {
             setError("Error al cargar los cursos");
             console.error("Error loading courses:", error);
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    // Cargar cursos inicialmente
+    useEffect(() => {
+        loadCourses();
+    }, [loadCourses]);
+
+    // Auto-refresh cada 30 segundos si está visible la página
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (!document.hidden) {
+                loadCourses();
+            }
+        }, 30000); // 30 segundos
+
+        return () => clearInterval(interval);
+    }, [loadCourses]);
+
+    // Refresh cuando la página se vuelve visible (ej. cambiar de tab)
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (!document.hidden) {
+                loadCourses();
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    }, [loadCourses]);
+
+
 
     const categories = Array.from(new Set(courses.map(course => course.categoria)));
 
@@ -110,8 +139,25 @@ export default function Courses() {
                                 ))}
                             </SelectContent>
                         </Select>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={loadCourses}
+                            disabled={loading}
+                            className="flex items-center gap-2"
+                        >
+                            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                            Actualizar
+                        </Button>
                     </div>
                 </motion.div>
+
+                {/* Last update indicator */}
+                <div className="text-center mb-4">
+                    <p className="text-sm text-muted-foreground">
+                        Última actualización: {new Date(lastUpdate).toLocaleTimeString()}
+                    </p>
+                </div>
 
                 {/* Stats */}
                 <motion.div

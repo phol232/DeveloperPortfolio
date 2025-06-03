@@ -121,9 +121,10 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
       console.log("Courses loaded:", coursesData);
       setCourses(coursesData);
     } catch (error) {
-        console.error("Error loading courses:", error);
-        console.error("Error message:", error instanceof Error ? error.message : 'Error desconocido');
-        setError(`Error al cargar los cursos: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+      console.error("Error loading courses:", error);
+      console.error("Error message:", errorMessage);
+      setError(`Error al cargar los cursos: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
@@ -170,6 +171,8 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
       console.log("Response completa:", JSON.stringify(response, null, 2));
       console.log("Response.success:", response?.success);
       console.log("Response.message:", response?.message);
+      // La respuesta puede incluir un campo data
+      console.log("Response.data:", response?.data || 'No data returned');
 
       if (response && response.success) {
         console.log("=== CURSO CREADO EXITOSAMENTE ===");
@@ -183,8 +186,8 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
           estado: "Draft"
         });
         setShowAddModal(false);
-        setSuccessMsg("¡Curso agregado exitosamente!");
-        setTimeout(() => setSuccessMsg(""), 3000);
+        setSuccessMsg("¡Curso agregado exitosamente! Los cursos activos aparecerán en la página pública.");
+        setTimeout(() => setSuccessMsg(""), 5000);
       } else {
         console.log("=== ERROR EN RESPUESTA DEL SERVIDOR ===");
         const errorMsg = response?.message || "Error al crear el curso - respuesta no exitosa";
@@ -274,8 +277,8 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
           estado: "Draft"
         });
         setShowEditModal(false);
-        setSuccessMsg("¡Curso actualizado exitosamente!");
-        setTimeout(() => setSuccessMsg(""), 3000);
+        setSuccessMsg("¡Curso actualizado exitosamente! Los cambios se reflejarán en la página pública si el curso está activo.");
+        setTimeout(() => setSuccessMsg(""), 5000);
       } else {
         console.log("=== ERROR EN ACTUALIZACIÓN ===");
         const errorMsg = response?.message || "Error al actualizar el curso";
@@ -284,8 +287,8 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
     } catch (error) {
       console.log("=== ERROR DE CONEXIÓN EN ACTUALIZACIÓN ===");
       console.error("Error updating course:", error);
-        const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
-        setError(`Error de conexión: ${errorMessage}`);
+      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+      setError(`Error de conexión: ${errorMessage}`);
     } finally {
       setLoading(false);
       console.log("=== PROCESO DE ACTUALIZACIÓN FINALIZADO ===");
@@ -305,8 +308,8 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
       if (response.success) {
         await loadCourses();
         setShowDeleteModal(false);
-        setSuccessMsg("¡Curso eliminado exitosamente!");
-        setTimeout(() => setSuccessMsg(""), 3000);
+        setSuccessMsg("¡Curso eliminado exitosamente! El curso ya no aparecerá en la página pública.");
+        setTimeout(() => setSuccessMsg(""), 5000);
       } else {
         setError(response.message || "Error al eliminar el curso");
       }
