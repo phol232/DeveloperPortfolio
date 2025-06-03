@@ -24,6 +24,7 @@ export interface Course {
   updated_at?: string;
   creador_email?: string;
   creador?: string;
+  image?: string; 
 }
 
 export interface ApiResponse {

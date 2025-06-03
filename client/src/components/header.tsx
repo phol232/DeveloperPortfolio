@@ -90,9 +90,17 @@ export function Header() {
     }
   };
 
-  // Si está mostrando el panel admin, no renderizar el header normal
   if (showAdminPanel) {
-    return <AdminPanel onClose={() => setShowAdminPanel(false)} />;
+    return (
+      <AdminPanel
+        onClose={() => setShowAdminPanel(false)}
+        onLogout={() => {
+          setIsAuthenticated(false);
+          setShowAdminPanel(false);
+        }}
+        userData={null} 
+      />
+    );
   }
 
   return (
