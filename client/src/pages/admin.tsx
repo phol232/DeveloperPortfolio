@@ -76,7 +76,10 @@ export default function Admin() {
       // Guardar primero en localStorage
       localStorage.setItem('user', JSON.stringify(completeUserData));
       if (user.token) {
+        console.log("Token recibido del servidor:", user.token);
         localStorage.setItem('auth_token', user.token);
+      } else {
+        console.error("No se recibió token del servidor");
       }
 
       // Set userData and authentication state synchronously

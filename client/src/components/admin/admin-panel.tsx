@@ -312,8 +312,9 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
       }
     } catch (error) {
         console.error("Error deleting course:", error);
-        console.error("Error message:", error instanceof Error ? error.message : 'Error desconocido');
-        setError(`Error de conexión: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+            console.error("Error message:", errorMessage);
+            setError(`Error de conexión: ${errorMessage}`);
     } finally {
       setLoading(false);
       setSelectedCourse(null);
