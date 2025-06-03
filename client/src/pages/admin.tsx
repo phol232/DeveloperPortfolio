@@ -35,12 +35,10 @@ export default function Admin() {
             email: parsedUser.email || ''
           };
 
-          // Set userData first, then authentication
+          // Set userData and authentication state synchronously
           setUserData(completeUserData);
-          setTimeout(() => {
-            setIsAuthenticated(true);
-            console.log("User authenticated successfully from localStorage");
-          }, 50);
+          setIsAuthenticated(true);
+          console.log("User authenticated successfully from localStorage");
         } else {
           console.log("Incomplete user data, removing from localStorage");
           localStorage.removeItem('user');
@@ -81,14 +79,10 @@ export default function Admin() {
         localStorage.setItem('auth_token', user.token);
       }
 
-      // Usar un callback para asegurar que userData se actualiza antes que isAuthenticated
+      // Set userData and authentication state synchronously
       setUserData(completeUserData);
-
-      // Pequeño delay para asegurar que el estado se actualiza correctamente
-      setTimeout(() => {
-        setIsAuthenticated(true);
-        console.log("User data successfully set and authentication completed");
-      }, 100);
+      setIsAuthenticated(true);
+      console.log("User data successfully set and authentication completed");
 
     } else {
       console.error("Invalid user data received:", completeUserData);
