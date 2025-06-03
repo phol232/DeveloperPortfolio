@@ -27,6 +27,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
@@ -508,6 +509,9 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
             <DialogContent className="max-w-md">
               <DialogHeader>
                 <DialogTitle>Agregar Nuevo Curso</DialogTitle>
+                <DialogDescription>
+                  Completa la información para crear un nuevo curso en el sistema.
+                </DialogDescription>
               </DialogHeader>
               <form onSubmit={handleAddCourse} className="space-y-4">
                 <div className="space-y-2">
@@ -545,7 +549,7 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
                       value={newCourse.precio}
                       onChange={(e) => setNewCourse({ ...newCourse, precio: Number(e.target.value) })}
                       required
-                      min={1}
+                      min={0}
                   />
                 </div>
                 <div className="space-y-2">
@@ -602,6 +606,9 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
             <DialogContent className="max-w-md">
               <DialogHeader>
                 <DialogTitle>Editar Curso</DialogTitle>
+                <DialogDescription>
+                  Modifica la información del curso seleccionado.
+                </DialogDescription>
               </DialogHeader>
               <form onSubmit={handleUpdateCourse} className="space-y-4">
                 <div className="space-y-2">
@@ -681,8 +688,10 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
             <DialogContent className="max-w-md">
               <DialogHeader>
                 <DialogTitle>Confirmar Eliminación</DialogTitle>
+                <DialogDescription>
+                  ¿Estás seguro de que quieres eliminar el curso "{selectedCourse?.nombre}"? Esta acción no se puede deshacer.
+                </DialogDescription>
               </DialogHeader>
-              <p>¿Estás seguro de que quieres eliminar el curso "{selectedCourse?.nombre}"?</p>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setShowDeleteModal(false)}>
                   Cancelar
