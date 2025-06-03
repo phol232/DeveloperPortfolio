@@ -1,0 +1,12 @@
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+API request failed: 
+TypeError {}
+
+Login error details: 
+Object {error: TypeError, message: "Failed to fetch", stack: "TypeError: Failed to fetch↵    at window.fetch…"}
+error: Error
+message: "Failed to fetch"
+stack: "TypeError: Failed to fetch↵ at window.fetch (https://717ad891-f670-4699-a648-33f987105863-00-hgd1p2c18nsc.worf.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:218642)↵ at ApiService.request (https://717ad891-f670-4699-a648-33f987105863-00-hgd1p2c18nsc.worf.replit.dev/src/lib/api.ts:13:30)↵ at ApiService.login (https://717ad891-f670-4699-a648-33f987105863-00-hgd1p2c18nsc.worf.replit.dev/src/lib/api.ts:25:17)↵ at handleLogin (https://717ad891-f670-4699-a648-33f987105863-00-hgd1p2c18nsc.worf.replit.dev/src/components/admin/auth-modal.tsx:44:41)↵ at HTMLUnknownElement.callCallback2 (https://717ad891-f670-4699-a648-33f987105863-00-hgd1p2c18nsc.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-WERSD76P.js?v=0c4caaaa:3674:22)↵ at Object.invokeGuardedCallbackDev (https://717ad891-f670-4699-a648-33f987105863-00-hgd1p2c18nsc.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-WERSD76P.js?v=0c4caaaa:3699:24)↵ at invokeGuardedCallback (https://717ad891-f670-4699-a648-33f987105863-00-hgd1p2c18nsc.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-WERSD76P.js?v=0c4caaaa:3733:39)↵ at invokeGuardedCallbackAndCatchFirstError (https://717ad891-f670-4699-a648-33f987105863-00-hgd1p2c18nsc.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-WERSD76P.js?v=0c4caaaa:3736:33)↵ at executeDispatch (https://717ad891-f670-4699-a648-33f987105863-00-hgd1p2c18nsc.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-WERSD76P.js?v=0c4caaaa:7014:11)↵ at processDispatchQueueItemsInOrder (https://717ad891-f670-4699-a648-33f987105863-00-hgd1p2c18nsc.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-WERSD76P.js?v=0c4caaaa:7034:15)"
+[[Prototype]]: Object
+
+Failed to fetch
