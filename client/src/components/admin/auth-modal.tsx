@@ -66,12 +66,14 @@ export function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
         setError(response.message || "Credenciales incorrectas");
       }
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorStack = error instanceof Error ? error.stack : 'No stack trace available';
       console.error("Login error details:", {
         error: error,
-        message: error instanceof Error ? error.message : 'Unknown error',
-        stack: error instanceof Error ? error.stack : undefined
+        message: errorMessage,
+        stack: errorStack
       });
-      setError(`Error de conexión: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+      setError(`Error de conexión: ${errorMessage}`);
     } finally {
       setIsLoading(false);
     }
@@ -124,9 +126,10 @@ export function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
         setError(response.message || "Error al crear la cuenta");
       }
     } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
         console.error("Register error:", error);
-        console.error("Error message:", error instanceof Error ? error.message : 'Error desconocido');
-        setError(`Error de conexión: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+        console.error("Error message:", errorMessage);
+        setError(`Error de conexión: ${errorMessage}`);
     } finally {
       setIsLoading(false);
     }

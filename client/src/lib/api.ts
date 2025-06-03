@@ -61,7 +61,8 @@ class ApiService {
       console.log('API Response:', data); // Log the response
 
       if (!response.ok) {
-        throw new Error(data.message || `HTTP error! status: ${response.status}`);
+        const errorMessage = data.message || `HTTP error! status: ${response.status}`;
+        throw new Error(errorMessage);
       }
 
       return data;
