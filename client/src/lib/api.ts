@@ -148,7 +148,6 @@ class ApiService {
       console.error('=== ERROR EN API createCourse ===');
       console.error('Error creating course:', error);
       console.error('Error type:', typeof error);
-      console.error('Error message:', error instanceof Error ? error.message : 'Error desconocido');
       throw error;
     }
   }
@@ -166,6 +165,7 @@ class ApiService {
     }
     console.log("=== API updateCourse INICIADO ===");
     console.log("URL:", `${API_BASE_URL}/cursos/editar.php`);
+    console.log("Token being sent:", token);
     console.log("Data a enviar:", JSON.stringify(course, null, 2));
 
     try {
@@ -198,18 +198,9 @@ class ApiService {
   }
 
   async deleteCourse(id: number): Promise<ApiResponse> {
-    // Verificar que el usuario esté autenticado con token
-    const token = localStorage.getItem('auth_token');
-    if (!token) {
-      throw new Error('Usuario no autenticado - token no encontrado');
-    }
-
     // Your PHP endpoint expects an id in the request body
     return this.request<ApiResponse>('/cursos/eliminar.php', {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`
-      },
       body: JSON.stringify({ id }),
     });
   }
