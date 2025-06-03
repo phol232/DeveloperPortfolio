@@ -87,6 +87,7 @@ export default function Admin() {
 
   const handleLogout = () => {
     localStorage.removeItem('user');
+    localStorage.removeItem('auth_token'); // Limpiar también el token
     setUserData(null);
     setIsAuthenticated(false);
     setLocation("/");
