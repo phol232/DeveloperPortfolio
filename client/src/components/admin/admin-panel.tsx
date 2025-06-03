@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import {
   Card, CardContent, CardHeader, CardTitle
@@ -5,6 +6,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue
 } from "@/components/ui/select";
@@ -66,7 +68,9 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
     setLoading(true);
     setError("");
     try {
+      console.log("Loading courses...");
       const coursesData = await apiService.getCourses();
+      console.log("Courses loaded:", coursesData);
       setCourses(coursesData);
     } catch (error) {
       setError("Error al cargar los cursos");
@@ -76,8 +80,14 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
     }
   };
 
-  const handleAddCourse = async () => {
-    if (!userData) return;
+  const handleAddCourse = async (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Adding course...", newCourse);
+
+    if (!userData) {
+      setError("Usuario no autenticado");
+      return;
+    }
 
     if (!newCourse.nombre || !newCourse.instructor || !newCourse.categoria || !newCourse.precio) {
       setError("Por favor, completa todos los campos obligatorios.");
@@ -97,7 +107,9 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
         user_id: userData.user_id
       };
 
+      console.log("Sending course data:", courseData);
       const response = await apiService.createCourse(courseData);
+      console.log("Create course response:", response);
 
       if (response.success) {
         await loadCourses();
@@ -111,7 +123,7 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
         });
         setShowAddModal(false);
         setSuccessMsg("¡Curso agregado exitosamente!");
-        setTimeout(() => setSuccessMsg(""), 2000);
+        setTimeout(() => setSuccessMsg(""), 3000);
       } else {
         setError(response.message || "Error al crear el curso");
       }
@@ -124,6 +136,7 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
   };
 
   const handleEditCourse = (course: Course) => {
+    console.log("Editing course:", course);
     setSelectedCourse(course);
     setNewCourse({
       nombre: course.nombre,
@@ -136,59 +149,78 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
     setShowEditModal(true);
   };
 
-  const handleUpdateCourse = async () => {
-    if (!selectedCourse || !userData) return;
+  const handleUpdateCourse = async (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Updating course...", selectedCourse, newCourse);
 
-    if (newCourse.nombre && newCourse.instructor && newCourse.categoria && newCourse.precio) {
-      setLoading(true);
-      setError("");
-      try {
-        const courseData = {
-          nombre: newCourse.nombre,
-          instructor: newCourse.instructor,
-          categoria: newCourse.categoria,
-          precio: newCourse.precio,
-          estudiantes: newCourse.estudiantes,
-          estado: newCourse.estado,
-          id: selectedCourse.id,
-          user_id: userData.user_id
-        };
-
-        const response = await apiService.updateCourse(courseData);
-
-        if (response.success) {
-          await loadCourses();
-          setSelectedCourse(null);
-          setNewCourse({
-            nombre: "",
-            instructor: "",
-            categoria: "",
-            precio: 0,
-            estudiantes: 0,
-            estado: "Draft"
-          });
-          setShowEditModal(false);
-        } else {
-          setError(response.message || "Error al actualizar el curso");
-        }
-      } catch (error) {
-        setError("Error de conexión al actualizar el curso");
-        console.error("Error updating course:", error);
-      } finally {
-        setLoading(false);
-      }
+    if (!selectedCourse || !userData) {
+      setError("Datos incompletos para actualizar");
+      return;
     }
-  };
 
-  const handleDeleteCourse = async (id: number) => {
+    if (!newCourse.nombre || !newCourse.instructor || !newCourse.categoria || !newCourse.precio) {
+      setError("Por favor, completa todos los campos obligatorios.");
+      return;
+    }
+
     setLoading(true);
     setError("");
     try {
-      const response = await apiService.deleteCourse(id);
+      const courseData = {
+        nombre: newCourse.nombre,
+        instructor: newCourse.instructor,
+        categoria: newCourse.categoria,
+        precio: newCourse.precio,
+        estudiantes: newCourse.estudiantes,
+        estado: newCourse.estado,
+        id: selectedCourse.id,
+        user_id: userData.user_id
+      };
+
+      console.log("Updating course with data:", courseData);
+      const response = await apiService.updateCourse(courseData);
+      console.log("Update course response:", response);
+
+      if (response.success) {
+        await loadCourses();
+        setSelectedCourse(null);
+        setNewCourse({
+          nombre: "",
+          instructor: "",
+          categoria: "",
+          precio: 0,
+          estudiantes: 0,
+          estado: "Draft"
+        });
+        setShowEditModal(false);
+        setSuccessMsg("¡Curso actualizado exitosamente!");
+        setTimeout(() => setSuccessMsg(""), 3000);
+      } else {
+        setError(response.message || "Error al actualizar el curso");
+      }
+    } catch (error) {
+      setError("Error de conexión al actualizar el curso");
+      console.error("Error updating course:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteCourse = async () => {
+    if (!selectedCourse) return;
+
+    console.log("Deleting course:", selectedCourse.id);
+    setLoading(true);
+    setError("");
+    try {
+      const response = await apiService.deleteCourse(selectedCourse.id!);
+      console.log("Delete course response:", response);
 
       if (response.success) {
         await loadCourses();
         setShowDeleteModal(false);
+        setSuccessMsg("¡Curso eliminado exitosamente!");
+        setTimeout(() => setSuccessMsg(""), 3000);
       } else {
         setError(response.message || "Error al eliminar el curso");
       }
@@ -219,6 +251,7 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
       course.instructor?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       course.categoria?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
   const totalStudents = courses.reduce((sum, course) => sum + (course.estudiantes || 0), 0);
   const totalRevenue = courses.reduce((sum, course) => sum + ((course.precio || 0) * (course.estudiantes || 0)), 0);
   const activeCourses = courses.filter(course => course.estado === "Active").length;
@@ -234,9 +267,9 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
               <h1 className="text-2xl font-bold">Panel Administrativo</h1>
             </div>
             <div className="flex items-center gap-4">
-              <button className="bg-transparent" onClick={onClose}>
+              <Button variant="ghost" size="sm" onClick={onClose}>
                 <X className="h-4 w-4" />
-              </button>
+              </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Avatar className="cursor-pointer">
@@ -261,6 +294,13 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
                 {successMsg}
               </div>
           )}
+
+          {error && (
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 text-center">
+                {error}
+              </div>
+          )}
+
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -316,39 +356,160 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle>Gestión de Cursos</CardTitle>
-                <button onClick={() => setShowAddModal(true)} disabled={loading} className="btn-primary flex items-center">
+                <Button onClick={() => setShowAddModal(true)} disabled={loading}>
                   <Plus className="h-4 w-4 mr-2" />
                   Agregar Curso
-                </button>
+                </Button>
               </div>
             </CardHeader>
             <CardContent>
-              {/* ... aquí va el table o los cards, igual que antes ... */}
-              {/* ... (no lo repito para ahorrar espacio, igual lo puedes copiar/pegar) ... */}
+              <div className="mb-4">
+                <Input
+                    placeholder="Buscar cursos..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="max-w-sm"
+                />
+              </div>
+
+              {loading ? (
+                  <div className="text-center py-8">Cargando cursos...</div>
+              ) : (
+                  <>
+                    {isMobile ? (
+                        <div className="space-y-4">
+                          {filteredCourses.map((course) => (
+                              <Card key={course.id}>
+                                <CardContent className="p-4">
+                                  <div className="flex justify-between items-start mb-2">
+                                    <h3 className="font-semibold">{course.nombre}</h3>
+                                    <DropdownMenu>
+                                      <DropdownMenuTrigger asChild>
+                                        <Button variant="ghost" size="sm">
+                                          <MoreHorizontal className="h-4 w-4" />
+                                        </Button>
+                                      </DropdownMenuTrigger>
+                                      <DropdownMenuContent>
+                                        <DropdownMenuItem onClick={() => handleEditCourse(course)}>
+                                          <Edit className="h-4 w-4 mr-2" />
+                                          Editar
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            onClick={() => {
+                                              setSelectedCourse(course);
+                                              setShowDeleteModal(true);
+                                            }}
+                                            className="text-red-600"
+                                        >
+                                          <Trash2 className="h-4 w-4 mr-2" />
+                                          Eliminar
+                                        </DropdownMenuItem>
+                                      </DropdownMenuContent>
+                                    </DropdownMenu>
+                                  </div>
+                                  <p className="text-sm text-muted-foreground mb-1">
+                                    Instructor: {course.instructor}
+                                  </p>
+                                  <p className="text-sm text-muted-foreground mb-1">
+                                    Categoría: {course.categoria}
+                                  </p>
+                                  <div className="flex justify-between items-center mt-2">
+                                    <span className="font-semibold">${course.precio}</span>
+                                    <Badge className={getStatusColor(course.estado || "Draft")}>
+                                      {course.estado}
+                                    </Badge>
+                                  </div>
+                                  <p className="text-xs text-muted-foreground mt-1">
+                                    {course.estudiantes || 0} estudiantes
+                                  </p>
+                                </CardContent>
+                              </Card>
+                          ))}
+                        </div>
+                    ) : (
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>Nombre</TableHead>
+                              <TableHead>Instructor</TableHead>
+                              <TableHead>Categoría</TableHead>
+                              <TableHead>Precio</TableHead>
+                              <TableHead>Estudiantes</TableHead>
+                              <TableHead>Estado</TableHead>
+                              <TableHead>Acciones</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {filteredCourses.map((course) => (
+                                <TableRow key={course.id}>
+                                  <TableCell className="font-medium">{course.nombre}</TableCell>
+                                  <TableCell>{course.instructor}</TableCell>
+                                  <TableCell>{course.categoria}</TableCell>
+                                  <TableCell>${course.precio}</TableCell>
+                                  <TableCell>{course.estudiantes || 0}</TableCell>
+                                  <TableCell>
+                                    <Badge className={getStatusColor(course.estado || "Draft")}>
+                                      {course.estado}
+                                    </Badge>
+                                  </TableCell>
+                                  <TableCell>
+                                    <div className="flex space-x-2">
+                                      <Button
+                                          variant="ghost"
+                                          size="sm"
+                                          onClick={() => handleEditCourse(course)}
+                                      >
+                                        <Edit className="h-4 w-4" />
+                                      </Button>
+                                      <Button
+                                          variant="ghost"
+                                          size="sm"
+                                          onClick={() => {
+                                            setSelectedCourse(course);
+                                            setShowDeleteModal(true);
+                                          }}
+                                          className="text-red-600 hover:text-red-800"
+                                      >
+                                        <Trash2 className="h-4 w-4" />
+                                      </Button>
+                                    </div>
+                                  </TableCell>
+                                </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                    )}
+
+                    {filteredCourses.length === 0 && !loading && (
+                        <div className="text-center py-8 text-muted-foreground">
+                          No se encontraron cursos
+                        </div>
+                    )}
+                  </>
+              )}
             </CardContent>
           </Card>
 
           {/* Add Course Modal */}
           <Dialog open={showAddModal} onOpenChange={(open) => {
             setShowAddModal(open);
-            setError("");
+            if (!open) {
+              setError("");
+              setNewCourse({
+                nombre: "",
+                instructor: "",
+                categoria: "",
+                precio: 0,
+                estudiantes: 0,
+                estado: "Draft"
+              });
+            }
           }}>
             <DialogContent className="max-w-md">
               <DialogHeader>
                 <DialogTitle>Agregar Nuevo Curso</DialogTitle>
               </DialogHeader>
-              {error && (
-                  <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                    {error}
-                  </div>
-              )}
-              <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    handleAddCourse();
-                  }}
-                  className="space-y-4"
-              >
+              <form onSubmit={handleAddCourse} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">Nombre del Curso</Label>
                   <Input
@@ -388,6 +549,16 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
                   />
                 </div>
                 <div className="space-y-2">
+                  <Label htmlFor="students">Estudiantes</Label>
+                  <Input
+                      id="students"
+                      type="number"
+                      value={newCourse.estudiantes}
+                      onChange={(e) => setNewCourse({ ...newCourse, estudiantes: Number(e.target.value) })}
+                      min={0}
+                  />
+                </div>
+                <div className="space-y-2">
                   <Label htmlFor="status">Estado</Label>
                   <Select value={newCourse.estado} onValueChange={(value) => setNewCourse({ ...newCourse, estado: value })}>
                     <SelectTrigger>
@@ -401,35 +572,38 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
                   </Select>
                 </div>
                 <DialogFooter>
-                  <button type="button" className="btn-outline" onClick={() => setShowAddModal(false)}>
+                  <Button type="button" variant="outline" onClick={() => setShowAddModal(false)}>
                     Cancelar
-                  </button>
-                  <button type="submit" className="btn-primary" disabled={loading}>
+                  </Button>
+                  <Button type="submit" disabled={loading}>
                     {loading ? "Procesando..." : "Agregar Curso"}
-                  </button>
+                  </Button>
                 </DialogFooter>
               </form>
             </DialogContent>
           </Dialog>
 
           {/* Edit Course Modal */}
-          <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
+          <Dialog open={showEditModal} onOpenChange={(open) => {
+            setShowEditModal(open);
+            if (!open) {
+              setError("");
+              setSelectedCourse(null);
+              setNewCourse({
+                nombre: "",
+                instructor: "",
+                categoria: "",
+                precio: 0,
+                estudiantes: 0,
+                estado: "Draft"
+              });
+            }
+          }}>
             <DialogContent className="max-w-md">
               <DialogHeader>
                 <DialogTitle>Editar Curso</DialogTitle>
               </DialogHeader>
-              {error && (
-                  <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                    {error}
-                  </div>
-              )}
-              <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    handleUpdateCourse();
-                  }}
-                  className="space-y-4"
-              >
+              <form onSubmit={handleUpdateCourse} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="edit-name">Nombre del Curso</Label>
                   <Input
@@ -468,6 +642,16 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
                   />
                 </div>
                 <div className="space-y-2">
+                  <Label htmlFor="edit-students">Estudiantes</Label>
+                  <Input
+                      id="edit-students"
+                      type="number"
+                      value={newCourse.estudiantes}
+                      onChange={(e) => setNewCourse({ ...newCourse, estudiantes: Number(e.target.value) })}
+                      min={0}
+                  />
+                </div>
+                <div className="space-y-2">
                   <Label htmlFor="edit-status">Estado</Label>
                   <Select value={newCourse.estado} onValueChange={(value) => setNewCourse({ ...newCourse, estado: value })}>
                     <SelectTrigger>
@@ -481,19 +665,34 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
                   </Select>
                 </div>
                 <DialogFooter>
-                  <button type="button" className="btn-outline" onClick={() => setShowEditModal(false)}>
+                  <Button type="button" variant="outline" onClick={() => setShowEditModal(false)}>
                     Cancelar
-                  </button>
-                  <button type="submit" className="btn-primary" disabled={loading}>
+                  </Button>
+                  <Button type="submit" disabled={loading}>
                     {loading ? "Procesando..." : "Guardar Cambios"}
-                  </button>
+                  </Button>
                 </DialogFooter>
               </form>
             </DialogContent>
           </Dialog>
 
           {/* Delete Course Modal */}
-          {/* ... tu modal de eliminar puede seguir igual ... */}
+          <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle>Confirmar Eliminación</DialogTitle>
+              </DialogHeader>
+              <p>¿Estás seguro de que quieres eliminar el curso "{selectedCourse?.nombre}"?</p>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setShowDeleteModal(false)}>
+                  Cancelar
+                </Button>
+                <Button variant="destructive" onClick={handleDeleteCourse} disabled={loading}>
+                  {loading ? "Eliminando..." : "Eliminar"}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
   );
