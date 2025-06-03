@@ -115,13 +115,22 @@ class ApiService {
       console.log("Response status:", response.status);
       console.log("Response ok:", response.ok);
 
+      const responseText = await response.text();
+      console.log("Raw response text:", responseText);
+
       if (!response.ok) {
-        const errorText = await response.text();
-        console.log("Error response text:", errorText);
-        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+        console.log("Error response text:", responseText);
+        throw new Error(`HTTP error! status: ${response.status}, message: ${responseText}`);
       }
 
-      const jsonResponse = await response.json();
+      let jsonResponse;
+      try {
+        jsonResponse = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error("JSON Parse Error:", parseError);
+        console.error("Response was:", responseText);
+        throw new Error(`Invalid JSON response: ${responseText.substring(0, 100)}...`);
+      }
       console.log("Response JSON:", JSON.stringify(jsonResponse, null, 2));
       return jsonResponse;
     } catch (error) {
