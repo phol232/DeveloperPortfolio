@@ -40,23 +40,13 @@ export default function Courses() {
         loadCourses();
     }, [loadCourses]);
 
-    // Refresh cuando la página se vuelve visible (ej. cambiar de tab)
-    useEffect(() => {
-        const handleVisibilityChange = () => {
-            if (!document.hidden) {
-                loadCourses();
-            }
-        };
+    // Removed automatic refresh to prevent continuous loading
 
-        document.addEventListener('visibilitychange', handleVisibilityChange);
-        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-    }, [loadCourses]);
-
-    // Escuchar cambios de cursos desde el panel de administración
+    // Escuchar cambios de cursos desde el panel de administración únicamente
     useEffect(() => {
         const handleCourseUpdate = (event: CustomEvent) => {
-            console.log('Course update detected:', event.detail);
-            // Recargar cursos cuando hay cambios desde el admin
+            console.log('Course update detected from admin panel:', event.detail);
+            // Recargar cursos solo cuando hay cambios confirmados desde el admin
             loadCourses();
         };
 
