@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useState, useEffect } from "react";
 import { 
   Card, 
@@ -6,6 +7,10 @@ import {
   CardHeader, 
   CardTitle 
 } from "@/components/ui/card";
+=======
+import React, { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+>>>>>>> 902813be6c56b869d60265ace92e75a67777ea4f
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -54,6 +59,7 @@ import {
 } from "lucide-react";
 
 interface AdminPanelProps {
+<<<<<<< HEAD
   onClose: () => void;
   onLogout: () => void;
   userData: {
@@ -61,6 +67,9 @@ interface AdminPanelProps {
     nombre: string;
     email: string;
   } | null;
+=======
+  onClose?: () => void;
+>>>>>>> 902813be6c56b869d60265ace92e75a67777ea4f
 }
 
 export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
@@ -84,6 +93,7 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
 
+<<<<<<< HEAD
   // Cargar cursos al montar el componente
   useEffect(() => {
     loadCourses();
@@ -101,6 +111,29 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
     } finally {
       setLoading(false);
     }
+=======
+  // Nueva función para cerrar sesión y redirigir
+  const handleLogout = () => {
+    window.location.href = "/";
+  };
+
+  // Form handlers
+  const handleAddCourse = (e: React.FormEvent) => {
+    e.preventDefault();
+    const newCourse: Course = {
+      id: Math.max(...courses.map(c => c.id)) + 1,
+      name: formData.name,
+      instructor: formData.instructor,
+      category: formData.category,
+      price: formData.price,
+      students: 0,
+      status: formData.status,
+      image: "/api/placeholder/40/40"
+    };
+    setCourses([...courses, newCourse]);
+    setShowAddModal(false);
+    resetForm();
+>>>>>>> 902813be6c56b869d60265ace92e75a67777ea4f
   };
 
   const handleAddCourse = async () => {
@@ -266,13 +299,17 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
                 </Avatar>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+<<<<<<< HEAD
                 <DropdownMenuItem onClick={onLogout}>
+=======
+                <DropdownMenuItem onClick={handleLogout}>
+>>>>>>> 902813be6c56b869d60265ace92e75a67777ea4f
                   <X className="h-4 w-4 mr-2" />
                   Cerrar Sesión
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <Button variant="ghost" size="sm" onClick={onClose}>
+            <Button variant="ghost" size="sm" onClick={handleLogout}>
               <X className="h-4 w-4" />
             </Button>
           </div>

@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -35,6 +34,7 @@ export function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
     try {
       const response = await apiService.login(loginData);
       
+<<<<<<< HEAD
       if (response.success && response.user_id && response.nombre) {
         // Guardar datos del usuario en localStorage
         localStorage.setItem('user', JSON.stringify({
@@ -45,6 +45,12 @@ export function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
         
         onSuccess({ user_id: response.user_id, nombre: response.nombre });
         onClose();
+=======
+      if (loginData.email === validCredentials.email && 
+          loginData.password === validCredentials.password) {
+        // Redirigir al panel administrativo local
+        window.location.href = "/admin";
+>>>>>>> 902813be6c56b869d60265ace92e75a67777ea4f
       } else {
         setError(response.message || "Credenciales incorrectas");
       }
