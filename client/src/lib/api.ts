@@ -70,17 +70,91 @@ class ApiService {
   }
 
   async login(credentials: LoginCredentials): Promise<ApiResponse> {
-    return this.request<ApiResponse>('/auth/login.php', {
-      method: 'POST',
-      body: JSON.stringify(credentials),
-    });
+    console.log("=== LOGIN INICIADO ===");
+    console.log("URL:", `${API_BASE_URL}/auth/login.php`);
+    console.log("Credentials:", credentials);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/login.php`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(credentials),
+      });
+
+      console.log("Login response status:", response.status);
+      console.log("Login response ok:", response.ok);
+
+      const responseText = await response.text();
+      console.log("Raw login response:", responseText);
+
+      // Check if response contains HTML (PHP errors)
+      if (responseText.includes('<br') || responseText.includes('<b>')) {
+        console.error("PHP Error detected in response:", responseText);
+        throw new Error("Error del servidor: El backend tiene errores de PHP. Revisa los logs del servidor.");
+      }
+
+      let jsonResponse;
+      try {
+        jsonResponse = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error("JSON Parse Error:", parseError);
+        console.error("Response was:", responseText);
+        throw new Error(`Respuesta inválida del servidor: ${responseText.substring(0, 100)}...`);
+      }
+
+      console.log("Login response JSON:", JSON.stringify(jsonResponse, null, 2));
+      return jsonResponse;
+    } catch (error) {
+      console.error('=== ERROR EN LOGIN ===');
+      console.error('Login error:', error);
+      throw error;
+    }
   }
 
   async register(userData: RegisterData): Promise<ApiResponse> {
-    return this.request<ApiResponse>('/auth/register.php', {
-      method: 'POST',
-      body: JSON.stringify(userData),
-    });
+    console.log("=== REGISTER INICIADO ===");
+    console.log("URL:", `${API_BASE_URL}/auth/register.php`);
+    console.log("User data:", userData);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/register.php`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+      });
+
+      console.log("Register response status:", response.status);
+      console.log("Register response ok:", response.ok);
+
+      const responseText = await response.text();
+      console.log("Raw register response:", responseText);
+
+      // Check if response contains HTML (PHP errors)
+      if (responseText.includes('<br') || responseText.includes('<b>')) {
+        console.error("PHP Error detected in response:", responseText);
+        throw new Error("Error del servidor: El backend tiene errores de PHP. Revisa los logs del servidor.");
+      }
+
+      let jsonResponse;
+      try {
+        jsonResponse = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error("JSON Parse Error:", parseError);
+        console.error("Response was:", responseText);
+        throw new Error(`Respuesta inválida del servidor: ${responseText.substring(0, 100)}...`);
+      }
+
+      console.log("Register response JSON:", JSON.stringify(jsonResponse, null, 2));
+      return jsonResponse;
+    } catch (error) {
+      console.error('=== ERROR EN REGISTER ===');
+      console.error('Register error:', error);
+      throw error;
+    }
   }
 
   async getCourses(): Promise<Course[]> {
