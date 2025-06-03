@@ -128,7 +128,6 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
       console.log("Response completa:", JSON.stringify(response, null, 2));
       console.log("Response.success:", response?.success);
       console.log("Response.message:", response?.message);
-      console.log("Response.data:", response?.data);
 
       if (response && response.success) {
         console.log("=== CURSO CREADO EXITOSAMENTE ===");
