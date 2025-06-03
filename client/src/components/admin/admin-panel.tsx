@@ -142,7 +142,7 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
           });
           setShowAddModal(false);
         } else {
-          setError("Error al crear el curso");
+          setError(response.message || "Error al crear el curso");
         }
       } catch (error) {
         setError("Error de conexión al crear el curso");
@@ -199,7 +199,7 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
           });
           setShowEditModal(false);
         } else {
-          setError("Error al actualizar el curso");
+          setError(response.message || "Error al actualizar el curso");
         }
       } catch (error) {
         setError("Error de conexión al actualizar el curso");
@@ -220,7 +220,7 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
         await loadCourses(); // Recargar la lista
         setShowDeleteModal(false);
       } else {
-        setError("Error al eliminar el curso");
+        setError(response.message || "Error al eliminar el curso");
       }
     } catch (error) {
       setError("Error de conexión al eliminar el curso");
@@ -244,12 +244,11 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
     }
   };
 
-  const filteredCourses = courses.filter(course =>
+  const filteredCourses = courses.filter(course => 
     course.nombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     course.instructor?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     course.categoria?.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
   const totalStudents = courses.reduce((sum, course) => sum + (course.estudiantes || 0), 0);
   const totalRevenue = courses.reduce((sum, course) => sum + ((course.precio || 0) * (course.estudiantes || 0)), 0);
   const activeCourses = courses.filter(course => course.estado === "Active").length;
@@ -266,6 +265,9 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
             <h1 className="text-2xl font-bold">Panel Administrativo</h1>
           </div>
           <div className="flex items-center gap-4">
+            <Button variant="ghost" size="sm" onClick={onClose}>
+              <X className="h-4 w-4" />
+            </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Avatar className="cursor-pointer">
@@ -280,9 +282,6 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <Button variant="ghost" size="sm" onClick={onClose}>
-              <X className="h-4 w-4" />
-            </Button>
           </div>
         </div>
       </div>
@@ -351,21 +350,6 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
               <Button onClick={() => setShowAddModal(true)} disabled={loading}>
                 <Plus className="h-4 w-4 mr-2" />
                 Agregar Curso
-              </Button>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="relative flex-1 max-w-sm">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder="Buscar cursos..."
-                  className="pl-10"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-              <Button variant="outline">
-                <Filter className="h-4 w-4 mr-2" />
-                Filtros
               </Button>
             </div>
           </CardHeader>
@@ -496,7 +480,7 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
                               onClick={() => {
                                 setSelectedCourse(course);
                                 setShowDeleteModal(true);
-                              }}
+                            }}
                             >
                               <Trash2 className="h-4 w-4 mr-2" />
                               Eliminar
@@ -511,182 +495,182 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
             )}
           </CardContent>
         </Card>
+
+        {/* Add Course Modal */}
+        <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Agregar Nuevo Curso</DialogTitle>
+            </DialogHeader>
+            {error && (
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                {error}
+              </div>
+            )}
+            <form onSubmit={(e) => {e.preventDefault(); handleAddCourse();}} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Nombre del Curso</Label>
+                <Input
+                  id="name"
+                  value={newCourse.nombre}
+                  onChange={(e) => setNewCourse({...newCourse, nombre: e.target.value})}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="instructor">Instructor</Label>
+                <Input
+                  id="instructor"
+                  value={newCourse.instructor}
+                  onChange={(e) => setNewCourse({...newCourse, instructor: e.target.value})}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="category">Categoría</Label>
+                <Input
+                  id="category"
+                  value={newCourse.categoria}
+                  onChange={(e) => setNewCourse({...newCourse, categoria: e.target.value})}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="price">Precio</Label>
+                <Input
+                  id="price"
+                  type="number"
+                  value={newCourse.precio}
+                  onChange={(e) => setNewCourse({...newCourse, precio: Number(e.target.value)})}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="status">Estado</Label>
+                <Select value={newCourse.estado} onValueChange={(value) => setNewCourse({...newCourse, estado: value})}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecciona un estado" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Active">Active</SelectItem>
+                    <SelectItem value="Inactive">Inactive</SelectItem>
+                    <SelectItem value="Draft">Draft</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={() => setShowAddModal(false)}>
+                  Cancelar
+                </Button>
+                <Button type="submit" disabled={loading}>
+                  {loading ? "Procesando..." : "Agregar Curso"}
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Course Modal */}
+        <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Editar Curso</DialogTitle>
+            </DialogHeader>
+            {error && (
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                {error}
+              </div>
+            )}
+            <form onSubmit={(e) => {e.preventDefault(); handleUpdateCourse();}} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="edit-name">Nombre del Curso</Label>
+                <Input
+                  id="edit-name"
+                  value={newCourse.nombre}
+                  onChange={(e) => setNewCourse({...newCourse, nombre: e.target.value})}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-instructor">Instructor</Label>
+                <Input
+                  id="edit-instructor"
+                  value={newCourse.instructor}
+                  onChange={(e) => setNewCourse({...newCourse, instructor: e.target.value})}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-category">Categoría</Label>
+                <Input
+                  id="edit-category"
+                  value={newCourse.categoria}
+                  onChange={(e) => setNewCourse({...newCourse, categoria: e.target.value})}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-price">Precio</Label>
+                <Input
+                  id="edit-price"
+                  type="number"
+                  value={newCourse.precio}
+                  onChange={(e) => setNewCourse({...newCourse, precio: Number(e.target.value)})}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-status">Estado</Label>
+                <Select value={newCourse.estado} onValueChange={(value) => setNewCourse({...newCourse, estado: value})}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecciona un estado" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Active">Active</SelectItem>
+                    <SelectItem value="Inactive">Inactive</SelectItem>
+                    <SelectItem value="Draft">Draft</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={() => setShowEditModal(false)}>
+                  Cancelar
+                </Button>
+                <Button type="submit" disabled={loading}>
+                  {loading ? "Procesando..." : "Guardar Cambios"}
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Delete Course Modal */}
+        <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Eliminar Curso</DialogTitle>
+            </DialogHeader>
+            <div className="py-4">
+              <p className="text-sm text-muted-foreground">
+                ¿Estás seguro de que quieres eliminar el curso "{selectedCourse?.nombre}"? 
+                Esta acción no se puede deshacer.
+              </p>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowDeleteModal(false)}>
+                Cancelar
+              </Button>
+              <Button variant="destructive" onClick={() => {
+                if (selectedCourse && selectedCourse.id !== undefined) {
+                  handleDeleteCourse(selectedCourse.id);
+                }
+              }} disabled={loading}>
+                {loading ? "Procesando..." : "Eliminar"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
-
-      {/* Add Course Modal */}
-      <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Agregar Nuevo Curso</DialogTitle>
-          </DialogHeader>
-          {error && (
-              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                {error}
-              </div>
-            )}
-          <form onSubmit={(e) => {e.preventDefault(); handleAddCourse();}} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Nombre del Curso</Label>
-              <Input
-                id="name"
-                value={newCourse.nombre}
-                onChange={(e) => setNewCourse({...newCourse, nombre: e.target.value})}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="instructor">Instructor</Label>
-              <Input
-                id="instructor"
-                value={newCourse.instructor}
-                onChange={(e) => setNewCourse({...newCourse, instructor: e.target.value})}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="category">Categoría</Label>
-              <Input
-                id="category"
-                value={newCourse.categoria}
-                onChange={(e) => setNewCourse({...newCourse, categoria: e.target.value})}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="price">Precio</Label>
-              <Input
-                id="price"
-                type="number"
-                value={newCourse.precio}
-                onChange={(e) => setNewCourse({...newCourse, precio: Number(e.target.value)})}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="status">Estado</Label>
-              <Select value={newCourse.estado} onValueChange={(value) => setNewCourse({...newCourse, estado: value})}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecciona un estado" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Active">Active</SelectItem>
-                  <SelectItem value="Inactive">Inactive</SelectItem>
-                  <SelectItem value="Draft">Draft</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setShowAddModal(false)}>
-                Cancelar
-              </Button>
-              <Button type="submit" disabled={loading}>
-                {loading ? "Procesando..." : "Agregar Curso"}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-
-      {/* Edit Course Modal */}
-      <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Editar Curso</DialogTitle>
-          </DialogHeader>
-          {error && (
-              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                {error}
-              </div>
-            )}
-          <form onSubmit={(e) => {e.preventDefault(); handleUpdateCourse();}} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="edit-name">Nombre del Curso</Label>
-              <Input
-                id="edit-name"
-                value={newCourse.nombre}
-                onChange={(e) => setNewCourse({...newCourse, nombre: e.target.value})}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="edit-instructor">Instructor</Label>
-              <Input
-                id="edit-instructor"
-                value={newCourse.instructor}
-                onChange={(e) => setNewCourse({...newCourse, instructor: e.target.value})}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="edit-category">Categoría</Label>
-              <Input
-                id="edit-category"
-                value={newCourse.categoria}
-                onChange={(e) => setNewCourse({...newCourse, categoria: e.target.value})}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="edit-price">Precio</Label>
-              <Input
-                id="edit-price"
-                type="number"
-                value={newCourse.precio}
-                onChange={(e) => setNewCourse({...newCourse, precio: Number(e.target.value)})}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="edit-status">Estado</Label>
-              <Select value={newCourse.estado} onValueChange={(value) => setNewCourse({...newCourse, estado: value})}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecciona un estado" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Active">Active</SelectItem>
-                  <SelectItem value="Inactive">Inactive</SelectItem>
-                  <SelectItem value="Draft">Draft</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setShowEditModal(false)}>
-                Cancelar
-              </Button>
-              <Button type="submit" disabled={loading}>
-                {loading ? "Procesando..." : "Guardar Cambios"}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-
-      {/* Delete Course Modal */}
-      <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Eliminar Curso</DialogTitle>
-          </DialogHeader>
-          <div className="py-4">
-            <p className="text-sm text-muted-foreground">
-              ¿Estás seguro de que quieres eliminar el curso "{selectedCourse?.nombre}"? 
-              Esta acción no se puede deshacer.
-            </p>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowDeleteModal(false)}>
-              Cancelar
-            </Button>
-            <Button variant="destructive" onClick={() => {
-              if (selectedCourse && selectedCourse.id !== undefined) {
-                handleDeleteCourse(selectedCourse.id);
-              }
-            }} disabled={loading}>
-              {loading ? "Procesando..." : "Eliminar"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

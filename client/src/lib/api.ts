@@ -32,6 +32,7 @@ export interface ApiResponse {
   message?: string;
   user_id?: number;
   nombre?: string;
+  error?: string; // Add error field for better error handling
 }
 
 class ApiService {
@@ -47,13 +48,16 @@ class ApiService {
     };
 
     try {
+      console.log('API Request:', url, config); // Log request details
       const response = await fetch(url, config);
+      const data = await response.json();
+      
+      console.log('API Response:', data); // Log the response
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(data.message || `HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
       return data;
     } catch (error) {
       console.error('API request failed:', error);
@@ -80,7 +84,29 @@ class ApiService {
   }
 
   async createCourse(course: Course): Promise<ApiResponse> {
-    // Make sure all required fields are included for your PHP backend
+    // Validate required fields
+    if (!course.nombre || !course.instructor || !course.categoria || !course.precio) {
+      throw new Error('Todos los campos son necesarios');
+    }
+    
+    // Make sure user_id is included - crucial for your PHP backend
+    if (!course.user_id) {
+      // Get user_id from localStorage if available
+      const userData = localStorage.getItem('user');
+      if (userData) {
+        const user = JSON.parse(userData);
+        course.user_id = user.user_id;
+      } else {
+        throw new Error('Usuario no autenticado');
+      }
+    }
+    
+    // Set default values for optional fields
+    course.estudiantes = course.estudiantes || 0;
+    course.estado = course.estado || 'Draft';
+    
+    console.log('Creating course with data:', course);
+    
     return this.request<ApiResponse>('/cursos/crear.php', {
       method: 'POST',
       body: JSON.stringify(course),
