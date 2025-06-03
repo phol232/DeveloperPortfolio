@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from "react";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
@@ -23,14 +22,9 @@ export default function Courses() {
     const loadCourses = useCallback(async () => {
         setLoading(true);
         try {
-            console.log("Solicitando cursos del servidor...");
             const coursesData = await apiService.getCourses();
-            console.log("Cursos recibidos:", coursesData.length);
-
             // Only show active courses to public
             const activeCourses = coursesData.filter(course => course.estado === "Active");
-            console.log("Cursos activos:", activeCourses.length);
-
             setCourses(activeCourses);
             setLastUpdate(Date.now());
         } catch (error) {
@@ -46,17 +40,6 @@ export default function Courses() {
         loadCourses();
     }, [loadCourses]);
 
-    // Auto-refresh cada 30 segundos si está visible la página
-    useEffect(() => {
-        const interval = setInterval(() => {
-            if (!document.hidden) {
-                loadCourses();
-            }
-        }, 30000); // 30 segundos
-
-        return () => clearInterval(interval);
-    }, [loadCourses]);
-
     // Refresh cuando la página se vuelve visible (ej. cambiar de tab)
     useEffect(() => {
         const handleVisibilityChange = () => {
@@ -69,7 +52,17 @@ export default function Courses() {
         return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
     }, [loadCourses]);
 
+    // Escuchar cambios de cursos desde el panel de administración
+    useEffect(() => {
+        const handleCourseUpdate = (event: CustomEvent) => {
+            console.log('Course update detected:', event.detail);
+            // Recargar cursos cuando hay cambios desde el admin
+            loadCourses();
+        };
 
+        window.addEventListener('courseUpdated', handleCourseUpdate as EventListener);
+        return () => window.removeEventListener('courseUpdated', handleCourseUpdate as EventListener);
+    }, [loadCourses]);
 
     const categories = Array.from(new Set(courses.map(course => course.categoria)));
 

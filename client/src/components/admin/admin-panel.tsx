@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import {
   Card, CardContent, CardHeader, CardTitle
@@ -61,51 +60,37 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [successMsg, setSuccessMsg] = useState("");
 
-  // Estado local para gestionar usuario
-  const [localUserData, setLocalUserData] = useState<{
-    user_id: number;
-    nombre: string;
-    email: string;
-  } | null>(null);
-
   // Verificación adicional de userData
   useEffect(() => {
     console.log("=== AdminPanel mounted ===");
     console.log("userData received:", userData);
 
-    // Si recibimos userData válido desde las props, usarlo
-    if (userData && userData.user_id) {
-      console.log("Using userData from props");
-      setLocalUserData(userData);
-      setError("");
+    if (!userData || !userData.user_id) {
+      console.error("AdminPanel: userData is null or invalid");
+
+      // Intentar recuperar datos desde localStorage como fallback
+      const savedUser = localStorage.getItem('user');
+      if (savedUser) {
+        try {
+          const parsedUser = JSON.parse(savedUser);
+          if (parsedUser.user_id && parsedUser.nombre) {
+            console.log("Recovered user data from localStorage:", parsedUser);
+            // En este caso, el componente padre debería manejar esto
+            // pero mostraremos un mensaje menos alarmante
+            setError("Cargando datos de usuario...");
+            return;
+          }
+        } catch (e) {
+          console.error("Error parsing localStorage user data:", e);
+        }
+      }
+
+      setError("Error: Datos de usuario no disponibles. Por favor, vuelve a iniciar sesión.");
       return;
     }
 
-    console.log("Trying to recover userData from localStorage");
-    // Intentar recuperar datos desde localStorage como fallback
-    const savedUser = localStorage.getItem('user');
-    if (savedUser) {
-      try {
-        const parsedUser = JSON.parse(savedUser);
-        if (parsedUser.user_id && parsedUser.nombre) {
-          console.log("Recovered user data from localStorage:", parsedUser);
-          setLocalUserData({
-            user_id: parsedUser.user_id,
-            nombre: parsedUser.nombre,
-            email: parsedUser.email || ''
-          });
-          setError("");
-          return;
-        }
-      } catch (e) {
-        console.error("Error parsing localStorage user data:", 
-                      e instanceof Error ? e.message : 'Error desconocido');
-      }
-    }
-
-    // Si llegamos aquí, no hay datos de usuario válidos
-    console.error("No valid user data found");
-    setError("Error: Datos de usuario no disponibles. Por favor, vuelve a iniciar sesión.");
+    // Clear error if userData is valid
+    setError("");
   }, [userData]);
 
   useEffect(() => {
@@ -121,10 +106,8 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
       console.log("Courses loaded:", coursesData);
       setCourses(coursesData);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+      setError("Error al cargar los cursos");
       console.error("Error loading courses:", error);
-      console.error("Error message:", errorMessage);
-      setError(`Error al cargar los cursos: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
@@ -134,9 +117,9 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
     e.preventDefault();
     console.log("=== INICIANDO PROCESO DE AGREGAR CURSO ===");
     console.log("Datos del curso:", newCourse);
-    console.log("Datos del usuario local:", localUserData);
+    console.log("Datos del usuario:", userData);
 
-    if (!localUserData) {
+    if (!userData) {
       console.log("ERROR: Usuario no autenticado");
       setError("Usuario no autenticado");
       return;
@@ -159,7 +142,7 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
         precio: newCourse.precio,
         estudiantes: newCourse.estudiantes,
         estado: newCourse.estado,
-        user_id: localUserData.user_id
+        user_id: userData.user_id
       };
 
       console.log("=== ENVIANDO DATOS AL SERVIDOR ===");
@@ -169,15 +152,11 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
 
       console.log("=== RESPUESTA RECIBIDA DEL SERVIDOR ===");
       console.log("Response completa:", JSON.stringify(response, null, 2));
-      console.log("Response.success:", response?.success);
-      console.log("Response.message:", response?.message);
-      // La respuesta puede incluir un campo data
-      console.log("Response.data:", response?.data || 'No data returned');
+      console.log("Response.success:", response && (response as any).success);
 
-      if (response && response.success) {
+      if (response && (response as any).success) {
         console.log("=== CURSO CREADO EXITOSAMENTE ===");
         await loadCourses();
-        setShowAddModal(false);
         setNewCourse({
           nombre: "",
           instructor: "",
@@ -189,20 +168,29 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
         setShowAddModal(false);
         setSuccessMsg("¡Curso agregado exitosamente! Los cursos activos aparecerán en la página pública.");
         setTimeout(() => setSuccessMsg(""), 5000);
+
+        // Disparar evento personalizado para notificar a otros componentes
+        window.dispatchEvent(new CustomEvent('courseUpdated', {
+          detail: { action: 'created', course: courseData }
+        }));
       } else {
         console.log("=== ERROR EN RESPUESTA DEL SERVIDOR ===");
-        const errorMsg = response?.message || "Error al crear el curso - respuesta no exitosa";
+        const errorMsg = (response && typeof response === "object" && "message" in response)
+          ? (response as any).message
+          : "Error al crear el curso - respuesta no exitosa";
         console.log("Error message:", errorMsg);
         setError(errorMsg);
       }
     } catch (error) {
       console.log("=== ERROR DE CONEXIÓN O EXCEPCIÓN ===");
       console.error("Error completo:", error);
-        const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
-        const errorStack = error instanceof Error ? error.stack : 'No disponible';
-        console.error("Error message:", errorMessage);
-        console.error("Error stack:", errorStack);
-        setError(`Error de conexión: ${errorMessage}`);
+      let errorMsg = "Error desconocido";
+      if (typeof error === "object" && error !== null && "message" in error) {
+        errorMsg = (error as any).message;
+      } else if (typeof error === "string") {
+        errorMsg = error;
+      }
+      setError(`Error de conexión: ${errorMsg}`);
     } finally {
       setLoading(false);
       console.log("=== PROCESO DE AGREGAR CURSO FINALIZADO ===");
@@ -228,9 +216,9 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
     console.log("=== INICIANDO PROCESO DE ACTUALIZAR CURSO ===");
     console.log("Curso seleccionado:", selectedCourse);
     console.log("Nuevos datos:", newCourse);
-    console.log("Usuario actual local:", localUserData);
+    console.log("Usuario actual:", userData);
 
-    if (!selectedCourse || !localUserData) {
+    if (!selectedCourse || !userData) {
       console.log("ERROR: Datos incompletos para actualizar");
       setError("Datos incompletos para actualizar");
       return;
@@ -254,7 +242,7 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
         precio: typeof newCourse.precio === 'string' ? parseFloat(newCourse.precio) : newCourse.precio,
         estudiantes: typeof newCourse.estudiantes === 'string' ? parseInt(newCourse.estudiantes) : newCourse.estudiantes,
         estado: newCourse.estado,
-        user_id: localUserData.user_id
+        user_id: userData.user_id
       };
 
       console.log("=== ENVIANDO ACTUALIZACIÓN AL SERVIDOR ===");
@@ -265,7 +253,7 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
       console.log("=== RESPUESTA DE ACTUALIZACIÓN ===");
       console.log("Update response:", JSON.stringify(response, null, 2));
 
-      if (response && response.success) {
+      if (response && (response as any).success) {
         console.log("=== CURSO ACTUALIZADO EXITOSAMENTE ===");
         await loadCourses();
         setSelectedCourse(null);
@@ -280,16 +268,28 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
         setShowEditModal(false);
         setSuccessMsg("¡Curso actualizado exitosamente! Los cambios se reflejarán en la página pública si el curso está activo.");
         setTimeout(() => setSuccessMsg(""), 5000);
+
+        // Disparar evento personalizado para notificar a otros componentes
+        window.dispatchEvent(new CustomEvent('courseUpdated', {
+          detail: { action: 'updated', course: courseData }
+        }));
       } else {
         console.log("=== ERROR EN ACTUALIZACIÓN ===");
-        const errorMsg = response?.message || "Error al actualizar el curso";
+        const errorMsg = (response && typeof response === "object" && "message" in response)
+          ? (response as any).message
+          : "Error al actualizar el curso";
         setError(errorMsg);
       }
     } catch (error) {
       console.log("=== ERROR DE CONEXIÓN EN ACTUALIZACIÓN ===");
       console.error("Error updating course:", error);
-      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
-      setError(`Error de conexión: ${errorMessage}`);
+      let errorMsg = "Error desconocido";
+      if (typeof error === "object" && error !== null && "message" in error) {
+        errorMsg = (error as any).message;
+      } else if (typeof error === "string") {
+        errorMsg = error;
+      }
+      setError(`Error de conexión: ${errorMsg}`);
     } finally {
       setLoading(false);
       console.log("=== PROCESO DE ACTUALIZACIÓN FINALIZADO ===");
@@ -306,19 +306,31 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
       const response = await apiService.deleteCourse(selectedCourse.id!);
       console.log("Delete course response:", response);
 
-      if (response.success) {
+      if (response && (response as any).success) {
         await loadCourses();
         setShowDeleteModal(false);
         setSuccessMsg("¡Curso eliminado exitosamente! El curso ya no aparecerá en la página pública.");
         setTimeout(() => setSuccessMsg(""), 5000);
+
+        // Disparar evento personalizado para notificar a otros componentes
+        window.dispatchEvent(new CustomEvent('courseUpdated', {
+          detail: { action: 'deleted', courseId: selectedCourse.id }
+        }));
       } else {
-        setError(response.message || "Error al eliminar el curso");
+        const errorMsg = (response && typeof response === "object" && "message" in response)
+          ? (response as any).message
+          : "Error al eliminar el curso";
+        setError(errorMsg);
       }
     } catch (error) {
-        console.error("Error deleting course:", error);
-            const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
-            console.error("Error message:", errorMessage);
-            setError(`Error de conexión: ${errorMessage}`);
+      let errorMsg = "Error desconocido";
+      if (typeof error === "object" && error !== null && "message" in error) {
+        errorMsg = (error as any).message;
+      } else if (typeof error === "string") {
+        errorMsg = error;
+      }
+      setError("Error de conexión al eliminar el curso: " + errorMsg);
+      console.error("Error deleting course:", error);
     } finally {
       setLoading(false);
       setSelectedCourse(null);
