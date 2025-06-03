@@ -35,6 +35,13 @@ export function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
       const response = await apiService.login(loginData);
 
       if (response.success && response.user_id && response.nombre) {
+        // Verificar que el token existe
+        if (!response.token) {
+          console.error("No token received from API");
+          setError("Error de autenticación: No se recibió token del servidor");
+          return;
+        }
+
         const userData = {
           user_id: response.user_id,
           nombre: response.nombre,

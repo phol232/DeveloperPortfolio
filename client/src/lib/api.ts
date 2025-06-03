@@ -119,6 +119,7 @@ class ApiService {
 
     console.log("=== API createCourse INICIADO ===");
     console.log("URL:", `${API_BASE_URL}/cursos/crear.php`);
+    console.log("Token being sent:", token);
     console.log("Data a enviar:", JSON.stringify(course, null, 2));
 
     try {
@@ -148,6 +149,12 @@ class ApiService {
       console.error('=== ERROR EN API createCourse ===');
       console.error('Error creating course:', error);
       console.error('Error type:', typeof error);
+      // Evita acceder directamente a error.message si error es {}
+      if (error && typeof error === "object" && "message" in error) {
+        console.error('Error message:', (error as any).message);
+      } else {
+        console.error('Error message:', String(error));
+      }
       throw error;
     }
   }
@@ -193,6 +200,12 @@ class ApiService {
     } catch (error) {
       console.error('=== ERROR EN API updateCourse ===');
       console.error('Error updating course:', error);
+      // Evita acceder directamente a error.message si error es {}
+      if (error && typeof error === "object" && "message" in error) {
+        console.error('Error message:', (error as any).message);
+      } else {
+        console.error('Error message:', String(error));
+      }
       throw error;
     }
   }
