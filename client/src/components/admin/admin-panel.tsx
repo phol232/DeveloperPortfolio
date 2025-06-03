@@ -91,6 +91,7 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  const [successMsg, setSuccessMsg] = useState(""); // Nuevo: mensaje de éxito
 
   // Cargar cursos al montar el componente
   useEffect(() => {
@@ -114,42 +115,48 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
   const handleAddCourse = async () => {
     if (!userData) return;
 
-    if (newCourse.nombre && newCourse.instructor && newCourse.categoria && newCourse.precio) {
-      setLoading(true);
-      setError("");
-      try {
-        const courseData = {
-          nombre: newCourse.nombre,
-          instructor: newCourse.instructor,
-          categoria: newCourse.categoria,
-          precio: newCourse.precio,
-          estudiantes: newCourse.estudiantes,
-          estado: newCourse.estado,
-          user_id: userData.user_id
-        };
+    // Validación de campos requeridos
+    if (!newCourse.nombre || !newCourse.instructor || !newCourse.categoria || !newCourse.precio) {
+      setError("Por favor, completa todos los campos obligatorios.");
+      return;
+    }
 
-        const response = await apiService.createCourse(courseData);
+    setLoading(true);
+    setError("");
+    try {
+      const courseData = {
+        nombre: newCourse.nombre,
+        instructor: newCourse.instructor,
+        categoria: newCourse.categoria,
+        precio: newCourse.precio,
+        estudiantes: newCourse.estudiantes,
+        estado: newCourse.estado,
+        user_id: userData.user_id
+      };
 
-        if (response.success) {
-          await loadCourses(); // Recargar la lista
-          setNewCourse({
-            nombre: "",
-            instructor: "",
-            categoria: "",
-            precio: 0,
-            estudiantes: 0,
-            estado: "Draft"
-          });
-          setShowAddModal(false);
-        } else {
-          setError(response.message || "Error al crear el curso");
-        }
-      } catch (error) {
-        setError("Error de conexión al crear el curso");
-        console.error("Error creating course:", error);
-      } finally {
-        setLoading(false);
+      const response = await apiService.createCourse(courseData);
+
+      if (response.success) {
+        await loadCourses(); // Recargar la lista
+        setNewCourse({
+          nombre: "",
+          instructor: "",
+          categoria: "",
+          precio: 0,
+          estudiantes: 0,
+          estado: "Draft"
+        });
+        setShowAddModal(false);
+        setSuccessMsg("¡Curso agregado exitosamente!");
+        setTimeout(() => setSuccessMsg(""), 2000);
+      } else {
+        setError(response.message || "Error al crear el curso");
       }
+    } catch (error) {
+      setError("Error de conexión al crear el curso");
+      console.error("Error creating course:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -287,6 +294,12 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
       </div>
 
       <div className="p-6 space-y-6">
+        {/* Mensaje de éxito global */}
+        {successMsg && (
+          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4 text-center">
+            {successMsg}
+          </div>
+        )}
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <Card>
@@ -497,17 +510,27 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
         </Card>
 
         {/* Add Course Modal */}
-        <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
+        <Dialog open={showAddModal} onOpenChange={(open) => {
+          setShowAddModal(open);
+          setError(""); // Limpiar error al cerrar/abrir
+        }}>
           <DialogContent className="max-w-md">
             <DialogHeader>
               <DialogTitle>Agregar Nuevo Curso</DialogTitle>
             </DialogHeader>
+            {/* Mensaje de error */}
             {error && (
               <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
                 {error}
               </div>
             )}
-            <form onSubmit={(e) => {e.preventDefault(); handleAddCourse();}} className="space-y-4">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleAddCourse();
+              }}
+              className="space-y-4"
+            >
               <div className="space-y-2">
                 <Label htmlFor="name">Nombre del Curso</Label>
                 <Input
@@ -515,6 +538,7 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
                   value={newCourse.nombre}
                   onChange={(e) => setNewCourse({...newCourse, nombre: e.target.value})}
                   required
+                  className={(!newCourse.nombre && error) ? "border-red-500" : ""}
                 />
               </div>
               <div className="space-y-2">
@@ -524,6 +548,7 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
                   value={newCourse.instructor}
                   onChange={(e) => setNewCourse({...newCourse, instructor: e.target.value})}
                   required
+                  className={(!newCourse.instructor && error) ? "border-red-500" : ""}
                 />
               </div>
               <div className="space-y-2">
@@ -533,6 +558,7 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
                   value={newCourse.categoria}
                   onChange={(e) => setNewCourse({...newCourse, categoria: e.target.value})}
                   required
+                  className={(!newCourse.categoria && error) ? "border-red-500" : ""}
                 />
               </div>
               <div className="space-y-2">
@@ -543,6 +569,8 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
                   value={newCourse.precio}
                   onChange={(e) => setNewCourse({...newCourse, precio: Number(e.target.value)})}
                   required
+                  className={(!newCourse.precio && error) ? "border-red-500" : ""}
+                  min={1}
                 />
               </div>
               <div className="space-y-2">
@@ -563,7 +591,15 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
                   Cancelar
                 </Button>
                 <Button type="submit" disabled={loading}>
-                  {loading ? "Procesando..." : "Agregar Curso"}
+                  {loading ? (
+                    <span className="flex items-center gap-2">
+                      <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                      </svg>
+                      Procesando...
+                    </span>
+                  ) : "Agregar Curso"}
                 </Button>
               </DialogFooter>
             </form>
