@@ -22,6 +22,16 @@ export default defineConfig({
         ]
       : []),
   ],
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://tecno-express.shop/BACKEND',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+        secure: true
+      }
+    }
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "client", "src"),

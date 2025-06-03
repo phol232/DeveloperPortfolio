@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://tecno-express.shop/BACKEND';
+const API_BASE_URL = import.meta.env.DEV ? '/api' : 'https://tecno-express.shop/BACKEND';
 
 export interface LoginCredentials {
   email: string;
