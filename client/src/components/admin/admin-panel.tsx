@@ -68,9 +68,30 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
 
     if (!userData || !userData.user_id) {
       console.error("AdminPanel: userData is null or invalid");
+
+      // Intentar recuperar datos desde localStorage como fallback
+      const savedUser = localStorage.getItem('user');
+      if (savedUser) {
+        try {
+          const parsedUser = JSON.parse(savedUser);
+          if (parsedUser.user_id && parsedUser.nombre) {
+            console.log("Recovered user data from localStorage:", parsedUser);
+            // En este caso, el componente padre debería manejar esto
+            // pero mostraremos un mensaje menos alarmante
+            setError("Cargando datos de usuario...");
+            return;
+          }
+        } catch (e) {
+          console.error("Error parsing localStorage user data:", e);
+        }
+      }
+
       setError("Error: Datos de usuario no disponibles. Por favor, vuelve a iniciar sesión.");
       return;
     }
+
+    // Clear error if userData is valid
+    setError("");
   }, [userData]);
 
   useEffect(() => {
@@ -160,7 +181,7 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
       console.log("=== ERROR DE CONEXIÓN O EXCEPCIÓN ===");
       console.error("Error completo:", error);
         console.error("Error message:", error instanceof Error ? error.message : 'Error desconocido');
-        console.error("Error stack:", error instanceof Error ? error.stack : 'No stack disponible');
+        console.error("Error stack:", error instanceof Error ? error.stack : 'No disponible');
         setError(`Error de conexión: ${error instanceof Error ? error.message : 'Error desconocido'}`);
     } finally {
       setLoading(false);

@@ -18,32 +18,45 @@ export default function Admin() {
     console.log("=== Admin page useEffect ===");
     // Verificar si hay una sesión guardada
     const savedUser = localStorage.getItem('user');
+    const savedToken = localStorage.getItem('auth_token');
     console.log("Saved user from localStorage:", savedUser);
+    console.log("Saved token exists:", !!savedToken);
 
-    if (savedUser) {
+    if (savedUser && savedToken) {
       try {
         const parsedUser = JSON.parse(savedUser);
         console.log("Parsed user data:", parsedUser);
 
         // Ensure the user object has all required fields
         if (parsedUser.user_id && parsedUser.nombre) {
-          setUserData({
+          const completeUserData: UserData = {
             user_id: parsedUser.user_id,
             nombre: parsedUser.nombre,
             email: parsedUser.email || ''
-          });
-          setIsAuthenticated(true);
-          console.log("User authenticated successfully");
+          };
+
+          // Set userData first, then authentication
+          setUserData(completeUserData);
+          setTimeout(() => {
+            setIsAuthenticated(true);
+            console.log("User authenticated successfully from localStorage");
+          }, 50);
         } else {
           console.log("Incomplete user data, removing from localStorage");
           localStorage.removeItem('user');
+          localStorage.removeItem('auth_token');
         }
       } catch (error) {
         console.error("Error parsing saved user data:", error);
         localStorage.removeItem('user');
+        localStorage.removeItem('auth_token');
       }
     } else {
-      console.log("No saved user found in localStorage");
+      console.log("No saved user or token found in localStorage");
+      if (savedUser && !savedToken) {
+        // Clean incomplete data
+        localStorage.removeItem('user');
+      }
     }
   }, []);
 
@@ -62,16 +75,21 @@ export default function Admin() {
 
     // Verificar que los datos son válidos antes de guardar
     if (completeUserData.user_id && completeUserData.nombre) {
-      setUserData(completeUserData);
-      setIsAuthenticated(true);
-
-      // Guardar también en localStorage para persistencia
+      // Guardar primero en localStorage
       localStorage.setItem('user', JSON.stringify(completeUserData));
       if (user.token) {
         localStorage.setItem('auth_token', user.token);
       }
 
-      console.log("User data successfully set and saved to localStorage");
+      // Usar un callback para asegurar que userData se actualiza antes que isAuthenticated
+      setUserData(completeUserData);
+
+      // Pequeño delay para asegurar que el estado se actualiza correctamente
+      setTimeout(() => {
+        setIsAuthenticated(true);
+        console.log("User data successfully set and authentication completed");
+      }, 100);
+
     } else {
       console.error("Invalid user data received:", completeUserData);
     }

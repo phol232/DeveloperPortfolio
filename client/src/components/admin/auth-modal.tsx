@@ -117,8 +117,9 @@ export function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
         setError(response.message || "Error al crear la cuenta");
       }
     } catch (error) {
-      setError("Error de conexión. Verifique su conexión a internet.");
-      console.error("Register error:", error);
+        console.error("Register error:", error);
+        console.error("Error message:", error instanceof Error ? error.message : 'Error desconocido');
+        setError(`Error de conexión: ${error instanceof Error ? error.message : 'Error desconocido'}`);
     } finally {
       setIsLoading(false);
     }
