@@ -177,6 +177,7 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
       if (response && response.success) {
         console.log("=== CURSO CREADO EXITOSAMENTE ===");
         await loadCourses();
+        setShowAddModal(false);
         setNewCourse({
           nombre: "",
           instructor: "",

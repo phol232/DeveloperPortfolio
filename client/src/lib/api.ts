@@ -160,7 +160,9 @@ class ApiService {
   }
 
   async getCourses(): Promise<Course[]> {
-    return this.request<Course[]>('/cursos/listar.php');
+    // Añadir timestamp para evitar caché
+    const timestamp = new Date().getTime();
+    return this.request<Course[]>(`/cursos/listar.php?_=${timestamp}`);
   }
 
   async createCourse(course: Course): Promise<ApiResponse> {
@@ -179,11 +181,18 @@ class ApiService {
     console.log("URL:", `${API_BASE_URL}/cursos/crear.php`);
     console.log("Data a enviar:", JSON.stringify(course, null, 2));
 
+    // Añadir timestamp para evitar caché
+    const timestamp = new Date().getTime();
+
     try {
-      const response = await fetch(`${API_BASE_URL}/cursos/crear.php`, {
+      // Añadir timestamp para evitar caché
+      const response = await fetch(`${API_BASE_URL}/cursos/crear.php?_=${timestamp}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
         },
         body: JSON.stringify(course),
       });
@@ -231,6 +240,9 @@ class ApiService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0',
         },
         body: JSON.stringify(course),
       });

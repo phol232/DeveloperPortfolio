@@ -23,9 +23,14 @@ export default function Courses() {
     const loadCourses = useCallback(async () => {
         setLoading(true);
         try {
+            console.log("Solicitando cursos del servidor...");
             const coursesData = await apiService.getCourses();
+            console.log("Cursos recibidos:", coursesData.length);
+
             // Only show active courses to public
             const activeCourses = coursesData.filter(course => course.estado === "Active");
+            console.log("Cursos activos:", activeCourses.length);
+
             setCourses(activeCourses);
             setLastUpdate(Date.now());
         } catch (error) {
