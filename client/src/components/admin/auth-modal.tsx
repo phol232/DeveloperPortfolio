@@ -49,8 +49,12 @@ export function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
         setError(response.message || "Credenciales incorrectas");
       }
     } catch (error) {
-      setError("Error de conexión. Verifique su conexión a internet.");
-      console.error("Login error:", error);
+      console.error("Login error details:", {
+        error: error,
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined
+      });
+      setError(`Error de conexión: ${error instanceof Error ? error.message : 'Error desconocido'}`);
     } finally {
       setIsLoading(false);
     }
