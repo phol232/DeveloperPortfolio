@@ -47,38 +47,34 @@ export default function Admin() {
     }
   }, []);
 
-  const handleAuthSuccess = (user: { user_id: number; nombre: string; email?: string }) => {
+  const handleAuthSuccess = (user: { user_id: number; nombre: string; email?: string; token?: string }) => {
     console.log("=== handleAuthSuccess called ===");
     console.log("User data received:", user);
 
-    // Get the complete user data from localStorage after successful auth
-    const savedUser = localStorage.getItem('user');
-    console.log("Saved user in localStorage:", savedUser);
-
-    let completeUserData;
-    if (savedUser) {
-      try {
-        completeUserData = JSON.parse(savedUser);
-        console.log("Parsed user data:", completeUserData);
-      } catch (error) {
-        console.error("Error parsing saved user:", error);
-        completeUserData = {
-          user_id: user.user_id,
-          nombre: user.nombre,
-          email: user.email || ''
-        };
-      }
-    } else {
-      completeUserData = {
-        user_id: user.user_id,
-        nombre: user.nombre,
-        email: user.email || ''
-      };
-    }
+    // Asegurar que tenemos todos los datos necesarios
+    const completeUserData: UserData = {
+      user_id: user.user_id,
+      nombre: user.nombre,
+      email: user.email || ''
+    };
 
     console.log("Complete user data to set:", completeUserData);
-    setUserData(completeUserData);
-    setIsAuthenticated(true);
+
+    // Verificar que los datos son válidos antes de guardar
+    if (completeUserData.user_id && completeUserData.nombre) {
+      setUserData(completeUserData);
+      setIsAuthenticated(true);
+
+      // Guardar también en localStorage para persistencia
+      localStorage.setItem('user', JSON.stringify(completeUserData));
+      if (user.token) {
+        localStorage.setItem('auth_token', user.token);
+      }
+
+      console.log("User data successfully set and saved to localStorage");
+    } else {
+      console.error("Invalid user data received:", completeUserData);
+    }
   };
 
   const handleClose = () => {
@@ -94,6 +90,19 @@ export default function Admin() {
   };
 
   if (!isAuthenticated) {
+    return (
+        <AuthModal
+            isOpen={true}
+            onClose={handleClose}
+            onSuccess={handleAuthSuccess}
+        />
+    );
+  }
+
+  // Extra validation to ensure userData is not null
+  if (!userData || !userData.user_id) {
+    console.error("UserData is null or invalid, forcing re-authentication");
+    setIsAuthenticated(false);
     return (
         <AuthModal
             isOpen={true}

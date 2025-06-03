@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import {
   Card, CardContent, CardHeader, CardTitle
@@ -60,6 +61,18 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [successMsg, setSuccessMsg] = useState("");
 
+  // Verificación adicional de userData
+  useEffect(() => {
+    console.log("=== AdminPanel mounted ===");
+    console.log("userData received:", userData);
+
+    if (!userData || !userData.user_id) {
+      console.error("AdminPanel: userData is null or invalid");
+      setError("Error: Datos de usuario no disponibles. Por favor, vuelve a iniciar sesión.");
+      return;
+    }
+  }, [userData]);
+
   useEffect(() => {
     loadCourses();
   }, []);
@@ -73,8 +86,9 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
       console.log("Courses loaded:", coursesData);
       setCourses(coursesData);
     } catch (error) {
-      setError("Error al cargar los cursos");
-      console.error("Error loading courses:", error);
+        console.error("Error loading courses:", error);
+        console.error("Error message:", error instanceof Error ? error.message : 'Error desconocido');
+        setError(`Error al cargar los cursos: ${error instanceof Error ? error.message : 'Error desconocido'}`);
     } finally {
       setLoading(false);
     }
@@ -142,12 +156,12 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
         console.log("Error message:", errorMsg);
         setError(errorMsg);
       }
-    } catch (error: any) {
+    } catch (error) {
       console.log("=== ERROR DE CONEXIÓN O EXCEPCIÓN ===");
       console.error("Error completo:", error);
-      console.error("Error message:", error?.message);
-      console.error("Error stack:", error?.stack);
-      setError(`Error de conexión: ${error?.message || 'Error desconocido'}`);
+        console.error("Error message:", error instanceof Error ? error.message : 'Error desconocido');
+        console.error("Error stack:", error instanceof Error ? error.stack : 'No stack disponible');
+        setError(`Error de conexión: ${error instanceof Error ? error.message : 'Error desconocido'}`);
     } finally {
       setLoading(false);
       console.log("=== PROCESO DE AGREGAR CURSO FINALIZADO ===");
@@ -230,10 +244,10 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
         const errorMsg = response?.message || "Error al actualizar el curso";
         setError(errorMsg);
       }
-    } catch (error: any) {
+    } catch (error) {
       console.log("=== ERROR DE CONEXIÓN EN ACTUALIZACIÓN ===");
       console.error("Error updating course:", error);
-      setError(`Error de conexión: ${error?.message || 'Error desconocido'}`);
+        setError(`Error de conexión: ${error instanceof Error ? error.message : 'Error desconocido'}`);
     } finally {
       setLoading(false);
       console.log("=== PROCESO DE ACTUALIZACIÓN FINALIZADO ===");
@@ -259,8 +273,9 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
         setError(response.message || "Error al eliminar el curso");
       }
     } catch (error) {
-      setError("Error de conexión al eliminar el curso");
-      console.error("Error deleting course:", error);
+        console.error("Error deleting course:", error);
+        console.error("Error message:", error instanceof Error ? error.message : 'Error desconocido');
+        setError(`Error de conexión: ${error instanceof Error ? error.message : 'Error desconocido'}`);
     } finally {
       setLoading(false);
       setSelectedCourse(null);

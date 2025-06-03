@@ -66,6 +66,7 @@ class ApiService {
       return data;
     } catch (error) {
       console.error('API request failed:', error);
+      console.error('Error message:', error instanceof Error ? error.message : 'Error desconocido');
       throw error;
     }
   }
@@ -188,6 +189,7 @@ class ApiService {
     } catch (error) {
       console.error('=== ERROR EN API updateCourse ===');
       console.error('Error updating course:', error);
+      console.error('Error message:', error instanceof Error ? error.message : 'Error desconocido');
       throw error;
     }
   }
