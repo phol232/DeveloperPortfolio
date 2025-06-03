@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import {
   Card, CardContent, CardHeader, CardTitle
@@ -30,12 +29,6 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-
-interface ApiResponse {
-  success: boolean;
-  message?: string;
-  data?: any;
-}
 
 interface AdminPanelProps {
   onClose: () => void;
@@ -128,7 +121,6 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
       console.log("Response completa:", JSON.stringify(response, null, 2));
       console.log("Response.success:", response?.success);
       console.log("Response.message:", response?.message);
-      console.log("Response.data:", 'data' in response ? response.data : 'No hay datos disponibles');
 
       if (response && response.success) {
         console.log("=== CURSO CREADO EXITOSAMENTE ===");
@@ -169,8 +161,8 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
       nombre: course.nombre,
       instructor: course.instructor,
       categoria: course.categoria,
-      precio: course.precio,
-      estudiantes: course.estudiantes || 0,
+      precio: typeof course.precio === 'string' ? parseFloat(course.precio) : course.precio,
+      estudiantes: typeof course.estudiantes === 'string' ? parseInt(course.estudiantes) : (course.estudiantes || 0),
       estado: course.estado || "Draft"
     });
     setShowEditModal(true);
@@ -181,6 +173,7 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
     console.log("=== INICIANDO PROCESO DE ACTUALIZAR CURSO ===");
     console.log("Curso seleccionado:", selectedCourse);
     console.log("Nuevos datos:", newCourse);
+    console.log("Usuario actual:", userData);
 
     if (!selectedCourse || !userData) {
       console.log("ERROR: Datos incompletos para actualizar");
@@ -199,13 +192,13 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
 
     try {
       const courseData = {
+        id: selectedCourse.id,
         nombre: newCourse.nombre,
         instructor: newCourse.instructor,
         categoria: newCourse.categoria,
-        precio: newCourse.precio,
-        estudiantes: newCourse.estudiantes,
+        precio: typeof newCourse.precio === 'string' ? parseFloat(newCourse.precio) : newCourse.precio,
+        estudiantes: typeof newCourse.estudiantes === 'string' ? parseInt(newCourse.estudiantes) : newCourse.estudiantes,
         estado: newCourse.estado,
-        id: selectedCourse.id,
         user_id: userData.user_id
       };
 
