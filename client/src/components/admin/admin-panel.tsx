@@ -61,37 +61,51 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [successMsg, setSuccessMsg] = useState("");
 
+  // Estado local para gestionar usuario
+  const [localUserData, setLocalUserData] = useState<{
+    user_id: number;
+    nombre: string;
+    email: string;
+  } | null>(null);
+
   // Verificación adicional de userData
   useEffect(() => {
     console.log("=== AdminPanel mounted ===");
     console.log("userData received:", userData);
 
-    if (!userData || !userData.user_id) {
-      console.error("AdminPanel: userData is null or invalid");
-
-      // Intentar recuperar datos desde localStorage como fallback
-      const savedUser = localStorage.getItem('user');
-      if (savedUser) {
-        try {
-          const parsedUser = JSON.parse(savedUser);
-          if (parsedUser.user_id && parsedUser.nombre) {
-            console.log("Recovered user data from localStorage:", parsedUser);
-            // En este caso, el componente padre debería manejar esto
-            // pero mostraremos un mensaje menos alarmante
-            setError("Cargando datos de usuario...");
-            return;
-          }
-        } catch (e) {
-          console.error("Error parsing localStorage user data:", e);
-        }
-      }
-
-      setError("Error: Datos de usuario no disponibles. Por favor, vuelve a iniciar sesión.");
+    // Si recibimos userData válido desde las props, usarlo
+    if (userData && userData.user_id) {
+      console.log("Using userData from props");
+      setLocalUserData(userData);
+      setError("");
       return;
     }
 
-    // Clear error if userData is valid
-    setError("");
+    console.log("Trying to recover userData from localStorage");
+    // Intentar recuperar datos desde localStorage como fallback
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      try {
+        const parsedUser = JSON.parse(savedUser);
+        if (parsedUser.user_id && parsedUser.nombre) {
+          console.log("Recovered user data from localStorage:", parsedUser);
+          setLocalUserData({
+            user_id: parsedUser.user_id,
+            nombre: parsedUser.nombre,
+            email: parsedUser.email || ''
+          });
+          setError("");
+          return;
+        }
+      } catch (e) {
+        console.error("Error parsing localStorage user data:", 
+                      e instanceof Error ? e.message : 'Error desconocido');
+      }
+    }
+
+    // Si llegamos aquí, no hay datos de usuario válidos
+    console.error("No valid user data found");
+    setError("Error: Datos de usuario no disponibles. Por favor, vuelve a iniciar sesión.");
   }, [userData]);
 
   useEffect(() => {
@@ -119,9 +133,9 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
     e.preventDefault();
     console.log("=== INICIANDO PROCESO DE AGREGAR CURSO ===");
     console.log("Datos del curso:", newCourse);
-    console.log("Datos del usuario:", userData);
+    console.log("Datos del usuario local:", localUserData);
 
-    if (!userData) {
+    if (!localUserData) {
       console.log("ERROR: Usuario no autenticado");
       setError("Usuario no autenticado");
       return;
@@ -144,7 +158,7 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
         precio: newCourse.precio,
         estudiantes: newCourse.estudiantes,
         estado: newCourse.estado,
-        user_id: userData.user_id
+        user_id: localUserData.user_id
       };
 
       console.log("=== ENVIANDO DATOS AL SERVIDOR ===");
@@ -180,9 +194,11 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
     } catch (error) {
       console.log("=== ERROR DE CONEXIÓN O EXCEPCIÓN ===");
       console.error("Error completo:", error);
-        console.error("Error message:", error instanceof Error ? error.message : 'Error desconocido');
-        console.error("Error stack:", error instanceof Error ? error.stack : 'No disponible');
-        setError(`Error de conexión: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+        const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+        const errorStack = error instanceof Error ? error.stack : 'No disponible';
+        console.error("Error message:", errorMessage);
+        console.error("Error stack:", errorStack);
+        setError(`Error de conexión: ${errorMessage}`);
     } finally {
       setLoading(false);
       console.log("=== PROCESO DE AGREGAR CURSO FINALIZADO ===");
@@ -208,9 +224,9 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
     console.log("=== INICIANDO PROCESO DE ACTUALIZAR CURSO ===");
     console.log("Curso seleccionado:", selectedCourse);
     console.log("Nuevos datos:", newCourse);
-    console.log("Usuario actual:", userData);
+    console.log("Usuario actual local:", localUserData);
 
-    if (!selectedCourse || !userData) {
+    if (!selectedCourse || !localUserData) {
       console.log("ERROR: Datos incompletos para actualizar");
       setError("Datos incompletos para actualizar");
       return;
@@ -234,7 +250,7 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
         precio: typeof newCourse.precio === 'string' ? parseFloat(newCourse.precio) : newCourse.precio,
         estudiantes: typeof newCourse.estudiantes === 'string' ? parseInt(newCourse.estudiantes) : newCourse.estudiantes,
         estado: newCourse.estado,
-        user_id: userData.user_id
+        user_id: localUserData.user_id
       };
 
       console.log("=== ENVIANDO ACTUALIZACIÓN AL SERVIDOR ===");
@@ -268,7 +284,8 @@ export function AdminPanel({ onClose, onLogout, userData }: AdminPanelProps) {
     } catch (error) {
       console.log("=== ERROR DE CONEXIÓN EN ACTUALIZACIÓN ===");
       console.error("Error updating course:", error);
-        setError(`Error de conexión: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+        const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+        setError(`Error de conexión: ${errorMessage}`);
     } finally {
       setLoading(false);
       console.log("=== PROCESO DE ACTUALIZACIÓN FINALIZADO ===");

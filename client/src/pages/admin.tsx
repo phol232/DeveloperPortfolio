@@ -113,7 +113,32 @@ export default function Admin() {
 
   // Extra validation to ensure userData is not null
   if (!userData || !userData.user_id) {
-    console.error("UserData is null or invalid, forcing re-authentication");
+    console.error("UserData is null or invalid, attempting to recover from localStorage");
+
+    // Intentar recuperar datos desde localStorage
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      try {
+        const parsedUser = JSON.parse(savedUser);
+        if (parsedUser.user_id && parsedUser.nombre) {
+          console.log("Recovered user data from localStorage in Admin component");
+          // Actualizar userData en lugar de forzar reautenticación
+          setTimeout(() => {
+            setUserData({
+              user_id: parsedUser.user_id,
+              nombre: parsedUser.nombre,
+              email: parsedUser.email || ''
+            });
+          }, 0);
+          // Continuar con el AdminPanel que ahora puede recuperar datos por sí mismo
+          return <AdminPanel onClose={handleClose} userData={null} onLogout={handleLogout} />;
+        }
+      } catch (e) {
+        console.error("Error parsing localStorage user data", e);
+      }
+    }
+
+    // Si no se pudieron recuperar los datos, forzar reautenticación
     setIsAuthenticated(false);
     return (
         <AuthModal
