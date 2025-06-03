@@ -80,6 +80,7 @@ class ApiService {
   }
 
   async createCourse(course: Course): Promise<ApiResponse> {
+    // Make sure all required fields are included for your PHP backend
     return this.request<ApiResponse>('/cursos/crear.php', {
       method: 'POST',
       body: JSON.stringify(course),
@@ -87,6 +88,10 @@ class ApiService {
   }
 
   async updateCourse(course: Course): Promise<ApiResponse> {
+    // Ensure course includes id for the PHP backend to identify which course to update
+    if (!course.id) {
+      throw new Error('Course ID is required for updates');
+    }
     return this.request<ApiResponse>('/cursos/editar.php', {
       method: 'POST',
       body: JSON.stringify(course),
@@ -94,10 +99,16 @@ class ApiService {
   }
 
   async deleteCourse(id: number): Promise<ApiResponse> {
+    // Your PHP endpoint expects an id in the request body
     return this.request<ApiResponse>('/cursos/eliminar.php', {
       method: 'POST',
       body: JSON.stringify({ id }),
     });
+  }
+  
+  // You might want to add a method to get a single course by ID if needed
+  async getCourseById(id: number): Promise<Course> {
+    return this.request<Course>(`/cursos/obtener.php?id=${id}`);
   }
 }
 
