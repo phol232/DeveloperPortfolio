@@ -24,7 +24,7 @@ export interface Course {
   updated_at?: string;
   creador_email?: string;
   creador?: string;
-  image?: string;
+  image?: string; 
 }
 
 export interface ApiResponse {
@@ -41,7 +41,7 @@ class ApiService {
 
     // Obtener el token JWT del localStorage
     const token = localStorage.getItem('auth_token');
-
+    
     const config: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
@@ -105,6 +105,17 @@ class ApiService {
       }
 
       console.log("Login response JSON:", JSON.stringify(jsonResponse, null, 2));
+      
+      // If successful, ensure we have all required fields in the response
+      if (jsonResponse.success && jsonResponse.user) {
+        return {
+          success: true,
+          message: jsonResponse.message,
+          token: jsonResponse.token,
+          user: jsonResponse.user
+        };
+      }
+      
       return jsonResponse;
     } catch (error) {
       console.error('=== ERROR EN LOGIN ===');
@@ -219,7 +230,7 @@ class ApiService {
     if (!course.id) {
       throw new Error('Course ID is required for updates');
     }
-
+    
     console.log("=== API updateCourse INICIADO ===");
     console.log("URL:", `${API_BASE_URL}/cursos/editar.php`);
     console.log("Data a enviar:", JSON.stringify(course, null, 2));
